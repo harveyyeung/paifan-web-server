@@ -1,0 +1,23 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+body.mobile {
+  max-width: 640px;
+  min-width: 320px;
+  margin: 0 auto;
+  font: '1.2rem/1.5 "Helvetica Neue",Helvetica,STHeiTi,sans-serif';
+}
+
+div.mobile-title-folder {
+  position: relative;
+}
+
+img.mobile-title-folder {
+  width: 100%;
+}

@@ -1,0 +1,8 @@
+{
+    "article-service": {
+        "getArticlesSummary": "/article/summary/bundle/:articleArray"
+    },
+    "user-service": {
+        "getUserArticles": "/user/articles/:userId/:pageNumber"
+    }
+}

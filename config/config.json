@@ -1,0 +1,14 @@
+{
+    "product-configuration": {
+        "httpTimeout": 16000
+    },
+    "service-connection": {
+        "development": {
+            "article-service": "http://127.0.0.1:4001/",
+            "user-service": "http://127.0.0.1:4002/"
+        },
+        "production": {
+
+        }
+    }
+}
