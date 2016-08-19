@@ -3,8 +3,8 @@ var request = bluebird.promisifyAll(require('request'), {multiArgs: true}); // S
 var current_env = process.env.NODE_ENV || "development";
 var config = require('../config/config.json');
 var timeout = config['product-configuration']['httpTimeout'];
-var baseUrl = config['service-connection'][current_env]['user-service'];
-var urls = require('../config/url.json')['user-service'];
+var baseUrl = config['service-connection'][current_env]['article-service'];
+var urls = require('../config/url.json')['article-service'];
 
 var parseResponseMessage = function (body) {
     var obj = JSON.parse(body);
@@ -16,13 +16,8 @@ var parseResponseMessage = function (body) {
     return obj;
 };
 
-exports.requestUserArticles = function (userId, classifyId, pageNumber) {
-    classifyId = classifyId || 0;
-    pageNumber = pageNumber || 0;
-
-    var url = urls['getUserArticles'].replace(':userId', userId.toString())
-                                     .replace(':classifyId', classifyId.toString())
-                                     .replace(':pageNumber', pageNumber.toString());
+exports.requestUserClassifyTypes = function (userId) {
+    var url = urls['getUserClassifyTypes'].replace(':userId', userId.toString());
 
     return request.getAsync({
         url:  url,

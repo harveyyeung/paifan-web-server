@@ -11,7 +11,7 @@ body.mobile {
   max-width: 640px;
   min-width: 320px;
   margin: 0 auto;
-  font: '1.2rem/1.5 "Helvetica Neue",Helvetica,STHeiTi,sans-serif';
+  font: 1.2rem/1.5 "Helvetica Neue",Helvetica,STHeiTi,sans-serif;
 }
 
 div.mobile-title-folder {
