@@ -17,10 +17,10 @@ router.get('/publish/mobile/:userId/:classifyId/:pageNumber', function(req, res,
             return next(userArticlesState.reason);
         }
 
-        var userClassifyTypes;
+        var userClassifyTypes = [ { id: 0, name: "最新" } ];
 
         if (userClassifyTypesState.state === "fulfilled") {
-            userClassifyTypes = userClassifyTypesState.value;
+            userClassifyTypesState.value.forEach(v => userClassifyTypes.push(v));
         }
 
         res.render('mobile/user_article', {

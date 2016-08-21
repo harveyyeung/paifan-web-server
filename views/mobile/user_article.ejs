@@ -4,11 +4,79 @@
     <head>
         <% include /common/head %>
         <title><%= user.nickName %></title>
+        <script>
+            $(function () {
+                userId = <%= rawParameters.userId %>;
+                classifyId = <%= rawParameters.classifyId %>;
+                pageNumber = <%= rawParameters.pageNumber %>;
+            });
+
+            function onClassifyClicked(id) {
+                window.open("/user/publish/mobile/" + userId + "/" + id + "/0", "_self");
+            };
+
+            function nextPage() {
+                pageNumber++;
+                window.open("/user/publish/mobile/" + userId + "/" + classifyId + "/" + pageNumber, "_self");
+            };
+
+            function previousPage() {
+                pageNumber--;
+                window.open("/user/publish/mobile/" + userId + "/" + classifyId + "/" + pageNumber, "_self");
+            };
+
+            function onArticleClicked(id) {
+                window.open("http://paifan.me/suit/item/detail.html?suitId=" + id + "&from=gongzhonghao&backUrl=" + encodeURIComponent(window.location.href), "_self");
+            };
+        </script>
     </head>
 
     <body class="mobile">
-        <div class="mobile-title-folder">
-            
+        <div class="mobile-classify-tabs">
+            <% classifyTypes.forEach(function (classify) { %>
+                <% if (classify.id == parseInt(rawParameters.classifyId)) { %>
+                    <div class="mobile-classify-selected" onclick='<%= "onClassifyClicked(" + classify.id + ")"; %>'><%= classify.name %></div>
+                <% } else { %>
+                    <div class="mobile-classify-unselected" onclick='<%= "onClassifyClicked(" + classify.id + ")"; %>'><%= classify.name %></div>
+                <% } %>
+            <% }); %>
+        </div>
+
+        <div class="mobile-title-folder" onclick='<%= "onArticleClicked(" + articles[0].id + ")"; %>'>
+            <img class="mobile-title-folder" src='<%= articles[0].cover + "?imageMogr2/thumbnail/640x640/format/jpg/q/95/strip" %>'>
+            <div class="mobile-title-float-bottom">
+                <%= articles[0].title %>
+            </div>
+        </div>
+
+        <% articles.forEach(function (article, id) { %>
+            <% if (id > 0) { %>
+            <div class="mobile-feed-article"  onclick='<%= "onArticleClicked(" + article.id + ")"; %>'>
+                <div class="mobile-feed-article-left"><img src='<%=  article.cover + "?imageMogr2/thumbnail/320x320/format/jpg/q/80/strip" %>' class="mobile-feed-article-folder"></div>
+                <div class="mobile-feed-article-right">
+                    <div class="mobile-feed-article-line">
+                        <%= article.title %>
+                    </div>
+                    <div class="mobile-feed-article-line">
+                        <% article.classifyList.forEach(function (classify) { %>
+                            <div class="mobile-classify-card"><%= classify %></div>
+                        <% }); %>
+                    </div>
+                    <div class="mobile-feed-article-line">
+                        <img src='<%= article.authorAvatar  + "?imageMogr2/thumbnail/64x64/format/jpg/q/70/strip" %>' class="mobile-author">
+                        <div class="authorName inline"><%= article.authorName %></div>
+                    </div>
+                </div>
+            </div>
+        <% } }); %>
+        
+        <div class="mobile-page">
+            <% if (parseInt(rawParameters.pageNumber) > 0) { %>
+                <div class="mobile-previous-page" onclick="previousPage();">〈 上一页</div>
+            <% } %>
+            <% if (articles.length >= 10) { %>
+                <div class="mobile-next-page" onclick="nextPage();">更多攻略 〉</div>
+            <% } %>
         </div>
     </body>
 </html>
