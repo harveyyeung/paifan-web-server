@@ -2,13 +2,27 @@
 
 <html lang="zh-CN">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-        <title>拍范</title>
+        <% include /common/head %>
+        <title>拍范 - 出错啦</title>
     </head>
 
-    <body>
-        <%= message %>
-        <%= error %>
+    <body class="mobile">
+        <% include /common/mobile_header %>
+        <div class="mobile-information">
+            <div class="mobile-error-title">
+                您访问的页面遇到了问题。
+            </div>
+
+            <div class="mobile-information-text">
+                您可以：
+                <a href="javascript:history.go(-1);"><ul>返回上一页</ul></a>
+            </div>
+            <div class="mobile-error-information">
+                <%= message %> <br/>
+                --------------- <br/>
+                <%= error %>
+            </div>
+        </div>
+        
     </body>
 </html>

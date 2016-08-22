@@ -131,5 +131,48 @@ div.mobile-next-page {
 }
 
 div.mobile-page {
-  margin: 20px 0 0 0;
+  margin: 0;
+}
+
+div.mobile-title {
+  padding: 10px 10px 0 10px;
+  background-repeat: no-repeat;
+  background-image: url(/ic_launcher.png);
+  background-position: 10px 10px;
+  background-size: 64px 64px;
+  height: 74px;
+  border-bottom: 1px solid gray;
+  margin: 0 0 10px 0;
+}
+
+
+div.mobile-title-text {
+  display: inline-block;
+  margin-left: 80px;
+  line-height: 30px;
+}
+
+span.mobile-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+div.mobile-information {
+  width: 100%;
+  word-wrap: break-word;
+}
+
+div.mobile-error-title {
+  margin: 20px 10px 20px 10px;
+  font-size: 1.2rem;
+  color: #fb5240;
+}
+
+div.mobile-information-text {
+  margin: 10px 20px;
+}
+
+div.mobile-error-information {
+  color: white;
+  font-size: 0.5rem;
 }
