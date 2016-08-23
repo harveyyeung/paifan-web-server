@@ -12,17 +12,17 @@
             });
 
             function onClassifyClicked(id) {
-                window.open("/user/publish/mobile/" + userId + "/" + id + "/0", "_self");
+                window.open("/wx/user/publish/mobile/" + userId + "/" + id + "/0", "_self");
             };
 
             function nextPage() {
                 pageNumber++;
-                window.open("/user/publish/mobile/" + userId + "/" + classifyId + "/" + pageNumber, "_self");
+                window.open("/wx/user/publish/mobile/" + userId + "/" + classifyId + "/" + pageNumber, "_self");
             };
 
             function previousPage() {
                 pageNumber--;
-                window.open("/user/publish/mobile/" + userId + "/" + classifyId + "/" + pageNumber, "_self");
+                window.open("/wx/user/publish/mobile/" + userId + "/" + classifyId + "/" + pageNumber, "_self");
             };
 
             // The old service won't return the createTime if it comes to suit detail page, so simply pass the createTime to the detail page.
