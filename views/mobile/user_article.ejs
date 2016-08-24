@@ -69,7 +69,7 @@
 
         <% articles.forEach(function (article, id) { %>
             <% if (id > 0) { %>
-            <div class="mobile-feed-article"  onclick='<%= "onArticleClicked(" + articles[0].id + ",\"" + articles[0].createTime + "\")"; %>'>
+            <div class="mobile-feed-article"  onclick='<%= "onArticleClicked(" + article.id + ",\"" + article.createTime + "\")"; %>'>
                 <div class="mobile-feed-article-left"><img src='<%=  article.cover + "?imageMogr2/thumbnail/320x320/format/jpg/q/80/strip" %>' class="mobile-feed-article-folder"></div>
                 <div class="mobile-feed-article-right">
                     <div class="mobile-feed-article-line">
