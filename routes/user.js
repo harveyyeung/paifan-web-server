@@ -1,10 +1,12 @@
 var express = require('express');
 var userServiceInterface = require('../interfaces/user_service_interface');
 var articleServiceInterface = require('../interfaces/article_service_interface');
+var current_env = process.env.NODE_ENV || "development";
+var config = require('../config/config.json');
 var router = express.Router();
 var Q = require('q');
 
-var renderUserArticles = function (req, res, next, userId, classifyId, pageNumber) {
+var renderUserArticles = function (req, res, next, userId, classifyId, pageNumber, scrollPosition) {
     var promises = [userServiceInterface.requestUserArticles(userId, classifyId, pageNumber),
                     articleServiceInterface.requestUserClassifyTypes(userId)];
 
@@ -20,6 +22,8 @@ var renderUserArticles = function (req, res, next, userId, classifyId, pageNumbe
         }
 
         res.render('mobile/user_article', {
+            baseUrl: config['base-url'][current_env],
+            scrollPosition: scrollPosition,
             user: userArticlesState.value.user,
             articles: userArticlesState.value.articles,
             classifyTypes: userClassifyTypes,
@@ -39,6 +43,15 @@ router.get('/publish/mobile/:userId/:classifyId/:pageNumber', function(req, res,
     var pageNumber = req.params.pageNumber;
     
     renderUserArticles(req, res, next, userId, classifyId, pageNumber);
+});
+
+router.get('/publish/mobile/:userId/:classifyId/:pageNumber/:position', function(req, res,next) {
+    var userId = req.params.userId;
+    var classifyId = req.params.classifyId;
+    var pageNumber = req.params.pageNumber;
+    var position = req.params.position;
+    
+    renderUserArticles(req, res, next, userId, classifyId, pageNumber, position);
 });
 
 router.get('/publish/mobile/:userId/:classifyId', function(req, res, next) {

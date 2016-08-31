@@ -45,8 +45,8 @@ div.mobile-classify-tabs {
     position: fixed;
     z-index: 255;
     overflow-x: auto;
-    padding: 10px 0 10px 10px;
-    width: 100%;
+    padding: 10px 20px 10px 10px;
+    width: 95%;
     white-space: nowrap;
 }
 
