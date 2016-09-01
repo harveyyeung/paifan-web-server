@@ -120,6 +120,13 @@ div.authorName {
   font-size: 0.9rem;
 }
 
+div.authorTimeSpan {
+  color: gray;
+  padding: 10px 5px 0 0;
+  font-size: 0.9rem;
+  float: right;
+}
+
 div.mobile-previous-page, div.mobile-next-page {
 	color: #fb5240;
   cursor: pointer;

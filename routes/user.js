@@ -3,6 +3,7 @@ var userServiceInterface = require('../interfaces/user_service_interface');
 var articleServiceInterface = require('../interfaces/article_service_interface');
 var current_env = process.env.NODE_ENV || "development";
 var config = require('../config/config.json');
+var util = require('../common/util');
 var router = express.Router();
 var Q = require('q');
 
@@ -19,6 +20,14 @@ var renderUserArticles = function (req, res, next, userId, classifyId, pageNumbe
 
         if (userClassifyTypesState.state === "fulfilled") {
             userClassifyTypesState.value.forEach(v => userClassifyTypes.push(v));
+        }
+
+        if (userArticlesState.value.articles != null) {
+            userArticlesState.value.articles.forEach(a => {
+                if (a.createTime) {
+                    a.timeSpan = util.getTimeSpan(a.createTime);
+                }
+            });
         }
 
         res.render('mobile/user_article', {

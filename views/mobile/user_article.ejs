@@ -47,23 +47,7 @@
 
             // The old service won't return the createTime if it comes to suit detail page, so simply pass the createTime to the detail page.
             // This is a temporary solution before we rewrite the detail page.
-            function onArticleClicked(id, createTime) {
-                var timeSpan = "";
-                try {
-                    createTime = Date.now() - Date.parse(createTime);
-                    if (createTime < 1000 * 60 * 60) {
-                        timeSpan = "刚刚";
-                    } else if (createTime < 1000 * 60 * 60 * 24) {
-                        timeSpan = Math.ceil(createTime / (1000 * 60 * 60)) + " 小时前";
-                    } else if (createTime < 1000 * 60 * 60 * 24 * 7) {
-                        timeSpan = Math.ceil(createTime / (1000 * 60 * 60 * 24)) + " 天前";
-                    } else {
-                        timeSpan = "7 天前";
-                    }
-                } catch (err){
-
-                }
-
+            function onArticleClicked(id, timeSpan) {
                 window.open("http://paifan.me/suit/item/detail.html?suitId=" + id + "&from=gongzhonghao&backUrl=" + encodeURIComponent(window.location.href) + "&timeSpan=" + timeSpan, "_self");
             };
         </script>
@@ -80,7 +64,7 @@
             <% }); %>
         </div>
 
-        <div class="mobile-title-folder" onclick='<%= "onArticleClicked(" + articles[0].id + ",\"" + articles[0].createTime + "\")"; %>'>
+        <div class="mobile-title-folder" onclick='<%= "onArticleClicked(" + articles[0].id + ",\"" + articles[0].timeSpan + "\")"; %>'>
             <img class="mobile-title-folder" src='<%= articles[0].cover + "?imageMogr2/thumbnail/640x640/format/jpg/q/95/strip" %>'>
             <div class="mobile-title-float-bottom">
                 <%= articles[0].title %>
@@ -89,7 +73,7 @@
 
         <% articles.forEach(function (article, id) { %>
             <% if (id > 0) { %>
-            <div class="mobile-feed-article"  onclick='<%= "onArticleClicked(" + article.id + ",\"" + article.createTime + "\")"; %>'>
+            <div class="mobile-feed-article"  onclick='<%= "onArticleClicked(" + article.id + ",\"" + article.timeSpan + "\")"; %>'>
                 <div class="mobile-feed-article-left"><img src='<%=  article.cover + "?imageMogr2/thumbnail/320x320/format/jpg/q/80/strip" %>' class="mobile-feed-article-folder"></div>
                 <div class="mobile-feed-article-right">
                     <div class="mobile-feed-article-line">
@@ -103,6 +87,7 @@
                     <div class="mobile-feed-article-line">
                         <img src='<%= article.authorAvatar  + "?imageMogr2/thumbnail/64x64/format/jpg/q/70/strip" %>' class="mobile-author">
                         <div class="authorName inline"><%= article.authorName %></div>
+                        <div class="authorTimeSpan inline"><%= article.timeSpan %></div>
                     </div>
                 </div>
             </div>
