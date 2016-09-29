@@ -65,7 +65,7 @@
         </div>
 
         <div class="mobile-title-folder" onclick='<%= "onArticleClicked(" + articles[0].id + ",\"" + articles[0].timeSpan + "\")"; %>'>
-            <img class="mobile-title-folder" src='<%= articles[0].cover + "?imageMogr2/thumbnail/640x640/format/jpg/q/95/strip" %>'>
+            <img class="mobile-title-folder" src='<%= articles[0].cover %>'>
             <div class="mobile-title-float-bottom">
                 <%= articles[0].title %>
             </div>
@@ -74,7 +74,7 @@
         <% articles.forEach(function (article, id) { %>
             <% if (id > 0) { %>
             <div class="mobile-feed-article"  onclick='<%= "onArticleClicked(" + article.id + ",\"" + article.timeSpan + "\")"; %>'>
-                <div class="mobile-feed-article-left"><img src='<%=  article.cover + "?imageMogr2/thumbnail/320x320/format/jpg/q/80/strip" %>' class="mobile-feed-article-folder"></div>
+                <div class="mobile-feed-article-left"><img src='<%=  article.cover %>' class="mobile-feed-article-folder"></div>
                 <div class="mobile-feed-article-right">
                     <div class="mobile-feed-article-line">
                         <%= article.title %>
@@ -85,7 +85,7 @@
                         <% }); %>
                     </div>
                     <div class="mobile-feed-article-line">
-                        <img src='<%= article.authorAvatar  + "?imageMogr2/thumbnail/64x64/format/jpg/q/70/strip" %>' class="mobile-author">
+                        <img src='<%= article.authorAvatar %>' class="mobile-author">
                         <div class="authorName inline"><%= article.authorName %></div>
                         <div class="authorTimeSpan inline"><%= article.timeSpan %></div>
                     </div>
