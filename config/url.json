@@ -1,7 +1,9 @@
 {
     "article-service": {
         "getArticlesSummary": "/article/summary/bundle/:articleArray",
-        "getUserClassifyTypes": "/channel/classify/user/:userId"
+        "getUserClassifyTypes": "/channel/classify/user/:userId",
+        "getHomeCategories": "/channel/home/get",
+        "getAllClassifies": "/channel/classifies"
     },
     "user-service": {
         "getUserArticles": "/user/articles/:userId/:classifyId/:pageNumber"

@@ -28,3 +28,29 @@ exports.requestUserClassifyTypes = function (userId) {
         return obj;
     });
 };
+
+exports.requestHomeCategories = function () {
+    var url = urls['getHomeCategories'];
+
+    return request.getAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout
+    }).spread((res, body) => {
+        var obj = parseResponseMessage(body);
+        return obj.homeCategories;
+    });
+};
+
+exports.requestClassifyTypes = function() {
+    var url = urls['getAllClassifies'];
+
+    return request.getAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout
+    }).spread((res, body) => {
+        var obj = parseResponseMessage(body);
+        return obj.classifies;
+    });
+};

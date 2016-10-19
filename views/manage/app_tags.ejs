@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+    <head>
+        <% include ../common/head %>
+        <title>App 首页标签管理</title>
+        <script>
+            $(function () {
+                homeCategories = JSON.parse('<%- homeCategories %>');
+                classifies = JSON.parse('<%- classifyTypes %>');
+                var homeSelector = $('#homeSelector');
+                for (var i = 0; i < homeCategories.length; i++) {
+                    homeSelector.append($('<option>', {
+                        value: i,
+                        text: homeCategories[i].name
+                    }));
+                }
+
+                var classifySelector = $('#classifySelector');
+                for (var i = 0; i < classifies.length; i++) {
+                    classifySelector.append($('<option>', {
+                        value: i,
+                        text: classifies[i].name
+                    }));
+                }
+            });
+        </script>
+    </head>
+    <body>
+        <select size="10" id="homeSelector">
+        </select>
+
+        <select size="10" id="classifySelector">
+        </select>
+    </body>
+</html>
