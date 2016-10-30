@@ -6,6 +6,6 @@
         "getAllClassifies": "/channel/classifies"
     },
     "user-service": {
-        "getUserArticles": "/user/articles/:userId/:classifyId/:pageNumber"
+        "getUserArticles": "/user/articles/completed/:userId/:classifyId/:pageNumber"
     }
 }
