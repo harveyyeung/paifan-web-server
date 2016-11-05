@@ -13,7 +13,7 @@
                 scrollPosition = '<%= scrollPosition %>';
 
                 try {
-                if (scrollPosition !== undefined && scrollPosition !== null) {
+                if (scrollPosition !== undefined && scrollPosition !== null && scrollPosition != '') {
                         var p = scrollPosition.split(',');
                         $('.mobile-classify-tabs').scrollLeft(parseInt(p[0]));
                         if (p.length > 1) $('body').scrollTop(parseInt(p[1]));
@@ -26,7 +26,7 @@
             function getScrollPosition(includeTop) {
                 var positionString;
                 positionString = $('.mobile-classify-tabs').scrollLeft();
-                positionString += "," + includeTop ? $('body').scrollTop() : '0';
+                positionString += "," + (includeTop ? $('body').scrollTop() : '0');
 
                 return positionString;
             };
@@ -48,7 +48,7 @@
             // The old service won't return the createTime if it comes to suit detail page, so simply pass the createTime to the detail page.
             // This is a temporary solution before we rewrite the detail page.
             function onArticleClicked(id, timeSpan) {
-                window.open("http://paifan.me/suit/item/detail.html?suitId=" + id + "&from=gongzhonghao&backUrl=" + encodeURIComponent(window.location.href) + "&timeSpan=" + timeSpan, "_self");
+                window.open("http://paifan.me/suit/item/detail.html?suitId=" + id + "&jumpSource=gongzhonghao&backUrl=" + encodeURIComponent(window.location.href) + "&timeSpan=" + timeSpan, "_self");
             };
         </script>
     </head>
