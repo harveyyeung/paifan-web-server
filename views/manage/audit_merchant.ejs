@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+    <head>
+        <% include ../common/head %>
+        <title>品牌入驻审核管理</title>
+        <script>
+            $(function () {
+                baseUrl = '<%= rawParameters.baseUrl %>';
+                merchantServiceUrl = '<%= rawParameters.merchantServiceUrl %>';
+            });
+
+            function approveMerchantInfo(userId) {
+                var url = merchantServiceUrl + 'audit/merchant/:userId/a/empty';
+                url = url.replace(':userId', userId);
+
+                if (confirm('您确定要批准这个申请吗？') == true) {
+                    window.open(url);
+                }
+            };
+
+            function rejectMerchantInfo(userId) {
+                var url = merchantServiceUrl + 'audit/merchant/:userId/r/:rejectedReason';
+
+                url = url.replace(':userId', userId);
+                var reason = prompt('请输入拒绝申请的理由。留空表示取消操作。');
+                if (!reason || reason == '') {
+                    return;
+                }
+
+                if (reason.length > 50) {
+                    alert('拒绝理由不能超过 50 个字符。');
+                    return;
+                }
+
+                reason = encodeURIComponent(reason);
+                url = url.replace(':rejectedReason', reason);
+                
+                window.open(url);
+            };
+
+            function viewMerchantInfo(id) {
+
+            };
+        </script>
+    </head>
+    <body>
+        <table width="80%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>用户号</th>
+                    <th>品牌名称</th>
+                    <th>提交时间</th>
+                    <th>手机号</th>
+                    <th>审核状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% list.forEach(function (merchantInfo) { %>
+                    <tr>
+                        <td><%= merchantInfo.id %></td>
+                        <td><%= merchantInfo.userId %></td>
+                        <td><%= merchantInfo.brandName %></td>
+                        <td><%= merchantInfo.entryTime %></td>
+                        <td><%= merchantInfo.contactPhone %></td>
+                        <td><%= merchantInfo.statusString %></td>
+                        <td>
+                            <a class='yellow-button'>查看</a>
+                            &nbsp; | &nbsp;
+                            <% if (merchantInfo.merchantInfoStatus != 'a' && merchantInfo.merchantInfoStatus != 'r') { %>
+                                <a class='green-button' onclick='approveMerchantInfo(<%= merchantInfo.userId %>);'>批准</a>
+                            <% } %>
+                            
+                            <% if (merchantInfo.merchantInfoStatus != 'r') { %>
+                                <a class='red-button' onclick='rejectMerchantInfo(<%= merchantInfo.userId %>);'>退回</a>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <br />
+        共 <%= list.length %> 条记录。
+    </body>
+</html>

@@ -5,7 +5,18 @@
     "service-connection": {
         "development": {
             "article-service": "http://127.0.0.1:4001/",
-            "user-service": "http://127.0.0.1:4002/"
+            "user-service": "http://127.0.0.1:4002/",
+            "merchant-service": "http://127.0.0.1:4003/"
+        },
+        "production": {
+
+        }
+    },
+    "extranet-service-connection": {
+        "development": {
+            "article-service": "http://127.0.0.1:4001/",
+            "user-service": "http://127.0.0.1:4002/",
+            "merchant-service": "http://127.0.0.1:4003/"
         },
         "production": {
 

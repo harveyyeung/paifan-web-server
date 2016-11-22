@@ -183,3 +183,64 @@ div.mobile-error-information {
   color: white;
   font-size: 0.5rem;
 }
+
+div.manage-tags-inline {
+  display: inline-block;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+table th {
+    height: auto;
+    padding: 5px 10px 2px;
+    text-align: center;
+    color: #666666;
+    vertical-align: bottom;
+    background-color: #efefef;
+    font-weight: bold;
+}
+
+table th, body table td {
+    padding: 8px;
+    line-height: 20px;
+    text-align: left;
+    vertical-align: top;
+    border: 1px solid #ddd;
+}
+
+.green-button, .red-button, .yellow-button {
+    color: #fff!important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.25);
+    border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.green-button {
+    background-color: #5bb75b;
+    border-color: #51a351 #51a351 #387038;
+}
+
+.green-button:hover {
+    background-color: #51a351;
+}
+
+.red-button {
+    background-color: #da4f49;
+    border-color: #bd362f #bd362f #802420;
+}
+
+.red-button:hover {
+    background-color: #bd362f;
+}
+
+.yellow-button {
+    background-color: #faa732;
+    border-color: #f89406 #f89406 #ad6704;
+}
+
+.yellow-button:hover {
+    background-color: #f89406;
+}

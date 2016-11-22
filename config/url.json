@@ -7,5 +7,9 @@
     },
     "user-service": {
         "getUserArticles": "/user/articles/completed/:userId/:classifyId/:pageNumber"
+    },
+    "merchant-service": {
+        "getMediaAuditList": "/audit/media/list/:auditStatus",
+        "getMerchantAuditList": "/audit/merchant/list/:auditStatus"
     }
 }

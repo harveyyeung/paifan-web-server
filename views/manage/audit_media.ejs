@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+    <head>
+        <% include ../common/head %>
+        <title>自媒体入驻审核管理</title>
+        <script>
+        </script>
+    </head>
+    <body>
+        <table width="80%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>用户号</th>
+                    <th>姓名</th>
+                    <th>提交时间</th>
+                    <th>手机号</th>
+                    <th>审核状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% list.forEach(function (mediaInfo) { %>
+                    <tr>
+                        <td><%= mediaInfo.id %></td>
+                        <td><%= mediaInfo.userId %></td>
+                        <td><%= mediaInfo.name %></td>
+                        <td><%= mediaInfo.entryTime %></td>
+                        <td><%= mediaInfo.phone %></td>
+                        <td><%= mediaInfo.statusString %></td>
+                        <td>
+                            <a class='yellow-button'>查看</a>
+                            &nbsp; | &nbsp;
+                            <% if (mediaInfo.mediaInfoStatus != 'a' && merchantInfo.mediaInfoStatus != 'r') { %>
+                                <a class='green-button'>批准</a>
+                            <% } %>
+                            
+                            <% if (mediaInfo.mediaInfoStatus != 'r') { %>
+                                <a class='red-button'>退回</a>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <br />
+        共 <%= list.length %> 条记录。
+    </body>
+</html>

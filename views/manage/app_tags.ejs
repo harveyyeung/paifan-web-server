@@ -8,6 +8,9 @@
             $(function () {
                 homeCategories = JSON.parse('<%- homeCategories %>');
                 classifies = JSON.parse('<%- classifyTypes %>');
+                classifies.splice(0, 0, {id: -1, name: '精选 *', code: 'HOME'});
+                classifies.splice(1, 0, {id: -2, name: '用户订阅 *', code: 'FEED'});
+
                 var homeSelector = $('#homeSelector');
                 for (var i = 0; i < homeCategories.length; i++) {
                     homeSelector.append($('<option>', {
@@ -27,10 +30,19 @@
         </script>
     </head>
     <body>
-        <select size="10" id="homeSelector">
-        </select>
+        <div class="manage-tags-inline">
+            <select size="10" id="homeSelector">
+            </select>
+        </div>
 
-        <select size="10" id="classifySelector">
-        </select>
+        <div class="manage-tags-inline">
+            <button type="button">&lt;&lt;添加</button>
+            <button type="button">移除&gt;&gt;</button>
+        </div>
+
+        <div class="manage-tags-inline">
+            <select size="10" id="classifySelector">
+            </select>
+        </div>
     </body>
 </html>
