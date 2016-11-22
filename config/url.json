@@ -6,10 +6,12 @@
         "getAllClassifies": "/channel/classifies"
     },
     "user-service": {
-        "getUserArticles": "/user/articles/completed/:userId/:classifyId/:pageNumber"
+        "getUserArticles": "/user/articles/completed/:userId/:classifyId/:pageNumber",
+        "getUserInformation": "/user/:userId"
     },
     "merchant-service": {
         "getMediaAuditList": "/audit/media/list/:auditStatus",
-        "getMerchantAuditList": "/audit/merchant/list/:auditStatus"
+        "getMerchantAuditList": "/audit/merchant/list/:auditStatus",
+        "getUserInformation": "/user/info/:userId"
     }
 }

@@ -72,3 +72,23 @@ exports.requestMerchantAuditList = function (auditStatus) {
         return obj.merchantList;
     });
 };
+
+exports.requestUserInformation = function (userId) {
+
+    var url = urls['getUserInformation'].replace(':userId', userId);
+
+    return request.getAsync({
+        url:  url,
+        baseUrl: baseUrl,
+        timeout: timeout
+    }).spread((res, body) => {
+        var obj = parseResponseMessage(body);  
+
+        if (obj && obj.auditStatus) {
+            obj.auditStatus.merchantInfoStatusString = translateStatusString(obj.auditStatus.merchantInfoStatus);
+            obj.auditStatus.mediaInfoStatusString = translateStatusString(obj.auditStatus.mediaInfoStatus);
+        } 
+
+        return obj;
+    });
+};

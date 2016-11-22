@@ -5,6 +5,43 @@
         <% include ../common/head %>
         <title>自媒体入驻审核管理</title>
         <script>
+            $(function () {
+                baseUrl = '<%= rawParameters.baseUrl %>';
+                merchantServiceUrl = '<%= rawParameters.merchantServiceUrl %>';
+            });
+
+            function approveMediaInfo(userId) {
+                var url = merchantServiceUrl + 'audit/media/:userId/a/empty';
+                url = url.replace(':userId', userId);
+
+                if (confirm('您确定要批准这个申请吗？') == true) {
+                    window.open(url);
+                }
+            };
+
+            function rejectMediaInfo(userId) {
+                var url = merchantServiceUrl + 'audit/media/:userId/r/:rejectedReason';
+
+                url = url.replace(':userId', userId);
+                var reason = prompt('请输入拒绝申请的理由。留空表示取消操作。');
+                if (!reason || reason == '') {
+                    return;
+                }
+
+                if (reason.length > 50) {
+                    alert('拒绝理由不能超过 50 个字符。');
+                    return;
+                }
+
+                reason = encodeURIComponent(reason);
+                url = url.replace(':rejectedReason', reason);
+                
+                window.open(url);
+            };
+
+            function viewMediaInfo(userId) {
+                window.open(baseUrl + 'manage/audit/info/' + userId);
+            };
         </script>
     </head>
     <body>
@@ -30,14 +67,14 @@
                         <td><%= mediaInfo.phone %></td>
                         <td><%= mediaInfo.statusString %></td>
                         <td>
-                            <a class='yellow-button'>查看</a>
-                            &nbsp; | &nbsp;
-                            <% if (mediaInfo.mediaInfoStatus != 'a' && merchantInfo.mediaInfoStatus != 'r') { %>
-                                <a class='green-button'>批准</a>
+                            <a class='yellow-button' onclick='viewMediaInfo(<%= mediaInfo.userId %>);'>查看</a>
+                            
+                            <% if (mediaInfo.mediaInfoStatus != 'a' && mediaInfo.mediaInfoStatus != 'r') { %>
+                                <a class='green-button' onclick='approveMediaInfo(<%= mediaInfo.userId %>);'>批准</a>
                             <% } %>
                             
                             <% if (mediaInfo.mediaInfoStatus != 'r') { %>
-                                <a class='red-button'>退回</a>
+                                <a class='red-button' onclick='rejectMediaInfo(<%= mediaInfo.userId %>);'>退回</a>
                             <% } %>
                         </td>
                     </tr>

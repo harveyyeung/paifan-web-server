@@ -39,8 +39,8 @@
                 window.open(url);
             };
 
-            function viewMerchantInfo(id) {
-
+            function viewMerchantInfo(userId) {
+                window.open(baseUrl + 'manage/audit/info/' + userId);
             };
         </script>
     </head>
@@ -67,8 +67,8 @@
                         <td><%= merchantInfo.contactPhone %></td>
                         <td><%= merchantInfo.statusString %></td>
                         <td>
-                            <a class='yellow-button'>查看</a>
-                            &nbsp; | &nbsp;
+                            <a class='yellow-button' onclick='viewMerchantInfo(<%= merchantInfo.userId %>);'>查看</a>
+                            
                             <% if (merchantInfo.merchantInfoStatus != 'a' && merchantInfo.merchantInfoStatus != 'r') { %>
                                 <a class='green-button' onclick='approveMerchantInfo(<%= merchantInfo.userId %>);'>批准</a>
                             <% } %>

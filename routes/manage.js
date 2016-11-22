@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var articleServiceInterface = require('../interfaces/article_service_interface');
 var merchantServiceInterface = require('../interfaces/merchant_service_interface');
+var userServiceInterface = require('../interfaces/user_service_interface');
 var Q = require('q');
 var config = require('../config/config.json');
 var current_env = process.env.NODE_ENV || "development";
@@ -23,7 +24,7 @@ router.get('/audit/media/list', function(req, res, next) {
         res.render('manage/audit_media.ejs', {
             list: result,
             rawParameters: {
-                baseUrl: config['base-url'][current_env],
+                baseUrl: config['extranet-server-url'][current_env],
                 merchantServiceUrl: config['extranet-service-connection'][current_env]['merchant-service']
             }
         });
@@ -37,13 +38,32 @@ router.get('/audit/merchant/list', function(req, res, next) {
         res.render('manage/audit_merchant.ejs', {
             list: result,
             rawParameters: {
-                baseUrl: config['base-url'][current_env],
+                baseUrl: config['extranet-server-url'][current_env],
                 merchantServiceUrl: config['extranet-service-connection'][current_env]['merchant-service']
             }
         });
     }).catch(err => {
         return next(err);
     });
+});
+
+router.get('/audit/info/:userId', function(req, res, next) {
+    var promises = [merchantServiceInterface.requestUserInformation(req.params.userId),
+                    userServiceInterface.requestUserInformation(req.params.userId)];
+    
+    return Q.all(promises).spread((info, userInfo) => {
+        res.render('manage/audit_merchant_view.ejs', {
+            info: info,
+            userInfo: userInfo,
+            rawParameters: {
+                baseUrl: config['extranet-server-url'][current_env],
+                merchantServiceUrl: config['extranet-service-connection'][current_env]['merchant-service']
+            }
+        });
+    }).catch(err => {
+        return next(err);
+    });
+
 });
 
 module.exports = router;

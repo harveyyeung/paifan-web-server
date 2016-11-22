@@ -33,3 +33,16 @@ exports.requestUserArticles = function (userId, classifyId, pageNumber) {
         return obj;
     });
 };
+
+exports.requestUserInformation = function (userId) {
+    var url = urls['getUserInformation'].replace(':userId', userId);
+
+    return request.getAsync({
+        url:  url,
+        baseUrl: baseUrl,
+        timeout: timeout
+    }).spread((res, body) => {
+        var obj = parseResponseMessage(body);       
+        return obj;
+    });
+};

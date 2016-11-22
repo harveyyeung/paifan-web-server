@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+    <head>
+        <% include ../common/head %>
+        <title>入驻审核管理</title>
+        <script>
+            $(function () {
+                baseUrl = '<%= rawParameters.baseUrl %>';
+                merchantServiceUrl = '<%= rawParameters.merchantServiceUrl %>';
+            });
+
+            function approveMerchantInfo(userId) {
+                var url = merchantServiceUrl + 'audit/merchant/:userId/a/empty';
+                url = url.replace(':userId', userId);
+
+                if (confirm('您确定要批准这个申请吗？') == true) {
+                    window.open(url);
+                }
+            };
+
+            function approveMediaInfo(userId) {
+                var url = merchantServiceUrl + 'audit/media/:userId/a/empty';
+                url = url.replace(':userId', userId);
+
+                if (confirm('您确定要批准这个申请吗？') == true) {
+                    window.open(url);
+                }
+            };
+
+            function rejectMerchantInfo(userId) {
+                var url = merchantServiceUrl + 'audit/merchant/:userId/r/:rejectedReason';
+                url = url.replace(':userId', userId);
+                var reason = $('#merchantRejectedReason').val();
+                if (!reason || reason == '') {
+                    alert('请输入退回修改的理由。')
+                    return;
+                }
+
+                if (reason.length > 50) {
+                    alert('拒绝理由不能超过 50 个字符。');
+                    return;
+                }
+
+                reason = encodeURIComponent(reason);
+                url = url.replace(':rejectedReason', reason);
+                
+                window.open(url);
+            };
+
+            function rejectMediaInfo(userId) {
+                var url = merchantServiceUrl + 'audit/media/:userId/r/:rejectedReason';
+                url = url.replace(':userId', userId);
+                var reason = $('#mediaRejectedReason').val();
+                if (!reason || reason == '') {
+                    alert('请输入退回修改的理由。')
+                    return;
+                }
+
+                if (reason.length > 50) {
+                    alert('拒绝理由不能超过 50 个字符。');
+                    return;
+                }
+
+                reason = encodeURIComponent(reason);
+                url = url.replace(':rejectedReason', reason);
+                
+                window.open(url);
+            };
+        </script>
+    </head>
+    <body>
+        <h3>用户信息</h3>
+        <table>
+            <tr>
+                <td width="50%">用户编号：<%= userInfo.id %></td>
+                <td width="50%">用户头像： <a href='<%= userInfo.avatar %>' target='_blank'>点击查看</a></td>
+            </tr>
+            <tr>
+                <td width="50%">用户名：<%= userInfo.userName %></td>
+                <td width="50%">昵称：<%= userInfo.nickName %></td>
+            </tr>
+        </table>
+        
+        <br />
+
+        <% if (info.merchantInformation) { %>
+            <h3>品牌入驻申请</h3>
+            <table>
+                <tr>
+                    <td width="50%">品牌名称：<%= info.merchantInformation.brandName %></td>
+                    <td width="50%">品牌类型：<%= info.merchantInformation.brandType %></td>
+                </tr>
+                <tr>
+                    <td width="50%">主营品类：<%= info.merchantInformation.occupations %></td>
+                    <td width="50%">风格定位：<%= info.merchantInformation.styles %></td>
+                </tr>
+                <tr>
+                    <td width="50%">年龄定位：<%= info.merchantInformation.ages %></td>
+                    <td width="50%">价格区间：<%= info.merchantInformation.prices %></td>
+                </tr>
+                <tr>
+                    <td width="50%">公司名称：<%= info.merchantInformation.companyName %></td>
+                    <td width="50%">公司地址：<%= info.merchantInformation.address %></td>
+                </tr>
+                <tr>
+                    <td width="50%">官网网址：<%= info.merchantInformation.website %></td>
+                    <td width="50%">淘宝店网址：<%= info.merchantInformation.taobaoWebsite %></td>
+                </tr>
+                <tr>
+                    <td width="50%">微信公众号：<%= info.merchantInformation.wechatNumber %></td>
+                    <td width="50%">联系人：<%= info.merchantInformation.contactPerson %></td>
+                </tr>
+                <tr>
+                    <td width="50%">联系人微信号：<%= info.merchantInformation.contactWechat %></td>
+                    <td width="50%">联系人手机号：<%= info.merchantInformation.contactPhone %></td>
+                </tr>
+            </table>
+
+            <br />
+            
+            <table>
+                <tr>
+                    <td>审核状态：</td>
+                    <td>
+                        <% if (!info.auditStatus) { %>
+                            待审核
+                        <% } else { %>
+                            <%= info.auditStatus.merchantInfoStatusString %>
+                        <% } %>
+                    </td>
+                <tr>
+                    <td>退回理由：</td>
+                    <td>
+                        <textarea id="merchantRejectedReason" rows="4" style="width:500px;"><% if (info.auditStatus && info.auditStatus.merchantInfoStatus == 'r') { %><%= info.auditStatus.merchantInfoRejectedReason %><% } %></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>操作：</td>
+                    <td>
+                        <% if (!info.auditStatus || (info.auditStatus.merchantInfoStatus != 'a' && info.auditStatus.merchantInfoStatus != 'r')) { %>
+                            <a class='green-button' onclick='approveMerchantInfo(<%= info.merchantInformation.userId %>);'>批准</a>
+                        <% } %>
+                                
+                        <% if (!info.auditStatus || info.auditStatus.merchantInfoStatus != 'r') { %>
+                            <a class='red-button' onclick='rejectMerchantInfo(<%= info.merchantInformation.userId %>);'>退回</a>
+                        <% } %>
+                    </td>
+                </tr>
+            </table>
+
+        <% } %>
+
+        <br />
+        
+        <% if (info.mediaInformation) { %>
+            <h3>自媒体入驻申请</h3>
+            <table>
+                <tr>
+                    <td width="50%">姓名：<%= info.mediaInformation.name %></td>
+                    <td width="50%">性别：<%= info.mediaInformation.gender %></td>
+                </tr>
+                <tr>
+                    <td width="50%">年龄：<%= info.mediaInformation.age %></td>
+                    <td width="50%">籍贯：<%= info.mediaInformation.hometown %></td>
+                </tr>
+                <tr>
+                    <td width="50%">所在地：<%= info.mediaInformation.city %></td>
+                    <td width="50%">专业：<%= info.mediaInformation.professional %></td>
+                </tr>
+                <tr>
+                    <td width="50%">职业：<%= info.mediaInformation.vocation %></td>
+                    <td width="50%">自身定位：<%= info.mediaInformation.selfClaim %></td>
+                </tr>
+                <tr>
+                    <td width="50%">擅长创作品类：<%= info.mediaInformation.skillGoods %></td>
+                    <td width="50%">擅长创作类型：<%= info.mediaInformation.skillTypes %></td>
+                </tr>
+                <tr>
+                    <td width="50%">熟悉品牌类型：<%= info.mediaInformation.skillBrands %></td>
+                    <td width="50%">推广资源地址：<%= info.mediaInformation.adsChannels %></td>
+                </tr>
+                <tr>
+                    <td width="50%">联系 QQ：<%= info.mediaInformation.qq %></td>
+                    <td width="50%">联系微信：<%= info.mediaInformation.wechat %></td>
+                </tr>
+                <tr>
+                    <td width="50%">联系手机：<%= info.mediaInformation.phone %></td>
+                    <td width="50%">支付宝账号：<%= info.mediaInformation.alipay %></td>
+                </tr>
+            </table>
+                    
+                    
+        <br />
+        
+        <table>
+            <tr>
+                <td>审核状态：</td>
+                <td>
+                    <% if (!info.auditStatus) { %>
+                        待审核
+                    <% } else { %>
+                        <%= info.auditStatus.mediaInfoStatusString %>
+                    <% } %>
+                </td>
+            <tr>
+                <td>退回理由：</td>
+                <td>
+                    <textarea id="mediaRejectedReason" rows="4" style="width:500px;"><% if (info.auditStatus && info.auditStatus.mediaInfoStatus == 'r') { %><%= info.auditStatus.mediaInfoRejectedReason %><% } %></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>操作：</td>
+                <td>
+                    <% if (!info.auditStatus || (info.auditStatus.mediaInfoStatus != 'a' && info.auditStatus.mediaInfoStatus != 'r')) { %>
+                        <a class='green-button' onclick='approveMediaInfo(<%= info.mediaInformation.userId %>);'>批准</a>
+                    <% } %>
+                            
+                    <% if (!info.auditStatus || info.auditStatus.mediaInfoStatus != 'r') { %>
+                        <a class='red-button' onclick='rejectMediaInfo(<%= info.mediaInformation.userId %>);'>退回</a>
+                    <% } %>
+                </td>
+            </tr>
+        </table>
+        <% } %>
+    </body>
+</html>
