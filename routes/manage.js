@@ -24,8 +24,7 @@ router.get('/audit/media/list', function(req, res, next) {
         res.render('manage/audit_media.ejs', {
             list: result,
             rawParameters: {
-                baseUrl: config['extranet-server-url'][current_env],
-                merchantServiceUrl: config['extranet-service-connection'][current_env]['merchant-service']
+                baseUrl: config['extranet-server-url'][current_env]
             }
         });
     }).catch(err => {
@@ -38,8 +37,7 @@ router.get('/audit/merchant/list', function(req, res, next) {
         res.render('manage/audit_merchant.ejs', {
             list: result,
             rawParameters: {
-                baseUrl: config['extranet-server-url'][current_env],
-                merchantServiceUrl: config['extranet-service-connection'][current_env]['merchant-service']
+                baseUrl: config['extranet-server-url'][current_env]
             }
         });
     }).catch(err => {
@@ -56,14 +54,32 @@ router.get('/audit/info/:userId', function(req, res, next) {
             info: info,
             userInfo: userInfo,
             rawParameters: {
-                baseUrl: config['extranet-server-url'][current_env],
-                merchantServiceUrl: config['extranet-service-connection'][current_env]['merchant-service']
+                baseUrl: config['extranet-server-url'][current_env]
             }
         });
     }).catch(err => {
         return next(err);
     });
 
+});
+
+/**
+ * This is a bridge for the web page to access Merchant Service to avoid cross domain accessing.
+ */
+router.get('/audit/merchant/:userId/:auditStatus/:rejectedReason', function (req, res, next) {
+    return merchantServiceInterface.requestAuditMerchant(req.params.userId, req.params.auditStatus, req.params.rejectedReason).then(message => {
+        res.send(message);
+    }).catch(err => {
+        return next(err);
+    });
+});
+
+router.get('/audit/media/:userId/:auditStatus/:rejectedReason', function (req, res, next) {
+    return merchantServiceInterface.requestAuditMedia(req.params.userId, req.params.auditStatus, req.params.rejectedReason).then(message => {
+        res.send(message);
+    }).catch(err => {
+        return next(err);
+    });
 });
 
 module.exports = router;

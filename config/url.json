@@ -12,6 +12,8 @@
     "merchant-service": {
         "getMediaAuditList": "/audit/media/list/:auditStatus",
         "getMerchantAuditList": "/audit/merchant/list/:auditStatus",
-        "getUserInformation": "/user/info/:userId"
+        "getUserInformation": "/user/info/:userId",
+        "auditMerchantInfo": "/audit/merchant/:userId/:auditStatus/:rejectedReason",
+        "auditMediaInfo": "/audit/media/:userId/:auditStatus/:rejectedReason"
     }
 }

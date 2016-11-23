@@ -7,20 +7,36 @@
         <script>
             $(function () {
                 baseUrl = '<%= rawParameters.baseUrl %>';
-                merchantServiceUrl = '<%= rawParameters.merchantServiceUrl %>';
             });
 
+            function sendRequest(url, data) {
+                $.ajax({
+                    type: "GET",
+                    data: data,
+                    dataType: "json",
+                    url: url,
+                    async: true,
+                    success: function (obj) {
+                        alert(obj.message);
+                        window.location.reload(true);
+                    }, 
+                    error: function (obj) {
+                        alert(JSON.parse(obj.responseText).message);
+                    }
+                });
+            }
+
             function approveMediaInfo(userId) {
-                var url = merchantServiceUrl + 'audit/media/:userId/a/empty';
+                var url = baseUrl + 'manage/audit/media/:userId/a/empty';
                 url = url.replace(':userId', userId);
 
                 if (confirm('您确定要批准这个申请吗？') == true) {
-                    window.open(url);
+                    sendRequest(url, null);
                 }
             };
 
             function rejectMediaInfo(userId) {
-                var url = merchantServiceUrl + 'audit/media/:userId/r/:rejectedReason';
+                var url = baseUrl + 'manage/audit/media/:userId/r/:rejectedReason';
 
                 url = url.replace(':userId', userId);
                 var reason = prompt('请输入拒绝申请的理由。留空表示取消操作。');
@@ -36,25 +52,26 @@
                 reason = encodeURIComponent(reason);
                 url = url.replace(':rejectedReason', reason);
                 
-                window.open(url);
+                sendRequest(url, null);
             };
 
             function viewMediaInfo(userId) {
-                window.open(baseUrl + 'manage/audit/info/' + userId);
+                var w = window.open(baseUrl + 'manage/audit/info/' + userId);
+                w.onbeforeunload = function () { window.location.reload(true); }
             };
         </script>
     </head>
     <body>
-        <table width="80%">
+        <table width="800px">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>用户号</th>
-                    <th>姓名</th>
-                    <th>提交时间</th>
-                    <th>手机号</th>
-                    <th>审核状态</th>
-                    <th>操作</th>
+                    <th width="5%">ID</th>
+                    <th width="10%">用户号</th>
+                    <th width="10%">姓名</th>
+                    <th width="25%">提交时间</th>
+                    <th width="20%">手机号</th>
+                    <th width="10%">审核状态</th>
+                    <th width="20%">操作</th>
                 </tr>
             </thead>
             <tbody>

@@ -7,29 +7,45 @@
         <script>
             $(function () {
                 baseUrl = '<%= rawParameters.baseUrl %>';
-                merchantServiceUrl = '<%= rawParameters.merchantServiceUrl %>';
             });
 
+            function sendRequest(url, data) {
+                $.ajax({
+                    type: "GET",
+                    data: data,
+                    dataType: "json",
+                    url: url,
+                    async: true,
+                    success: function (obj) {
+                        alert(obj.message);
+                        window.location.reload(true);
+                    }, 
+                    error: function (obj) {
+                        alert(JSON.parse(obj.responseText).message);
+                    }
+                });
+            }
+
             function approveMerchantInfo(userId) {
-                var url = merchantServiceUrl + 'audit/merchant/:userId/a/empty';
+                var url = baseUrl + 'manage/audit/merchant/:userId/a/empty';
                 url = url.replace(':userId', userId);
 
                 if (confirm('您确定要批准这个申请吗？') == true) {
-                    window.open(url);
+                    sendRequest(url, null);
                 }
             };
 
             function approveMediaInfo(userId) {
-                var url = merchantServiceUrl + 'audit/media/:userId/a/empty';
+                var url = baseUrl + 'manage/audit/media/:userId/a/empty';
                 url = url.replace(':userId', userId);
 
                 if (confirm('您确定要批准这个申请吗？') == true) {
-                    window.open(url);
+                    sendRequest(url, null);
                 }
             };
 
             function rejectMerchantInfo(userId) {
-                var url = merchantServiceUrl + 'audit/merchant/:userId/r/:rejectedReason';
+                var url = baseUrl + 'manage/audit/merchant/:userId/r/:rejectedReason';
                 url = url.replace(':userId', userId);
                 var reason = $('#merchantRejectedReason').val();
                 if (!reason || reason == '') {
@@ -45,11 +61,11 @@
                 reason = encodeURIComponent(reason);
                 url = url.replace(':rejectedReason', reason);
                 
-                window.open(url);
+                sendRequest(url, null);
             };
 
             function rejectMediaInfo(userId) {
-                var url = merchantServiceUrl + 'audit/media/:userId/r/:rejectedReason';
+                var url = baseUrl + 'manage/audit/media/:userId/r/:rejectedReason';
                 url = url.replace(':userId', userId);
                 var reason = $('#mediaRejectedReason').val();
                 if (!reason || reason == '') {
@@ -65,7 +81,7 @@
                 reason = encodeURIComponent(reason);
                 url = url.replace(':rejectedReason', reason);
                 
-                window.open(url);
+                sendRequest(url, null);
             };
         </script>
     </head>
@@ -86,7 +102,7 @@
 
         <% if (info.merchantInformation) { %>
             <h3>品牌入驻申请</h3>
-            <table>
+            <table width="800px">
                 <tr>
                     <td width="50%">品牌名称：<%= info.merchantInformation.brandName %></td>
                     <td width="50%">品牌类型：<%= info.merchantInformation.brandType %></td>
@@ -155,7 +171,7 @@
         
         <% if (info.mediaInformation) { %>
             <h3>自媒体入驻申请</h3>
-            <table>
+            <table width="800px">
                 <tr>
                     <td width="50%">姓名：<%= info.mediaInformation.name %></td>
                     <td width="50%">性别：<%= info.mediaInformation.gender %></td>

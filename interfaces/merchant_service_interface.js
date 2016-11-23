@@ -74,7 +74,6 @@ exports.requestMerchantAuditList = function (auditStatus) {
 };
 
 exports.requestUserInformation = function (userId) {
-
     var url = urls['getUserInformation'].replace(':userId', userId);
 
     return request.getAsync({
@@ -90,5 +89,33 @@ exports.requestUserInformation = function (userId) {
         } 
 
         return obj;
+    });
+};
+
+exports.requestAuditMerchant = function (userId, auditStatus, rejectedReason) {
+    var url = urls['auditMerchantInfo'].replace(':userId', userId)
+                                       .replace(':auditStatus', auditStatus)
+                                       .replace(':rejectedReason', rejectedReason);
+
+    return request.getAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout
+    }).spread((res, body) => {
+        return body;
+    });
+};
+
+exports.requestAuditMedia = function (userId, auditStatus, rejectedReason) {
+    var url = urls['auditMediaInfo'].replace(':userId', userId)
+                                    .replace(':auditStatus', auditStatus)
+                                    .replace(':rejectedReason', rejectedReason);
+
+    return request.getAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout
+    }).spread((res, body) => {
+        return body;
     });
 };
