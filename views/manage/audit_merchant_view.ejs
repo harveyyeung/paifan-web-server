@@ -154,7 +154,7 @@
                 <tr>
                     <td>操作：</td>
                     <td>
-                        <% if (!info.auditStatus || (info.auditStatus.merchantInfoStatus != 'a' && info.auditStatus.merchantInfoStatus != 'r')) { %>
+                        <% if (!info.auditStatus || (info.auditStatus.merchantInfoStatus != 'a')) { %>
                             <a class='green-button' onclick='approveMerchantInfo(<%= info.merchantInformation.userId %>);'>批准</a>
                         <% } %>
                                 
@@ -228,7 +228,7 @@
             <tr>
                 <td>操作：</td>
                 <td>
-                    <% if (!info.auditStatus || (info.auditStatus.mediaInfoStatus != 'a' && info.auditStatus.mediaInfoStatus != 'r')) { %>
+                    <% if (!info.auditStatus || (info.auditStatus.mediaInfoStatus != 'a')) { %>
                         <a class='green-button' onclick='approveMediaInfo(<%= info.mediaInformation.userId %>);'>批准</a>
                     <% } %>
                             
