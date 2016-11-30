@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+    <head>
+        <title>发布推广信息</title>
+        <link rel="stylesheet" href="/stylesheets/style_activity.css" />
+        <link rel="Shortcut Icon" href="/favicon.png">
+        <meta charset="utf-8">
+        <script src="/scripts/jquery-3.1.0.min.js"></script>
+        <script type="text/javascript" src="/plugins/tinymce/tinymce.min.js"></script>
+        <script>
+            tinymce.init({
+                selector: 'textarea#content',
+                toolbar: "bold italic underline strikethrough | cut copy paste | image",
+                plugins: "image imagetools",
+                language: 'zh_CN',
+                menu: {
+                    edit: {title: '编辑', items: 'undo redo | cut copy paste pastetext | selectall'},
+                    format: {title: '格式', items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'},
+                },
+                height: 300
+            });
+        </script>
+    </head>
+
+    <body id="post-body">
+        <form id="promotion_form" action="">
+
+        <div class="title">
+            <div class="titleBar">
+                <div class="logo-title-bar">
+                    <a href="http://www.paifan.me" class="title-top-logo"></a>
+                </div>
+            </div>
+        </div>
+
+		<div id="post-message-div" class="post-div-container">
+			<label id="post-message-title">
+                <% if (rawParameters.type == 'm') { %>
+                    亲爱的品牌广告主，请在下面发布您的推广需求，我们将推送给 1000+ 优质时尚自媒体。
+                <% } else { %>
+				    亲爱的营销服务商，请在下面发布您的推广服务，我们将推送给 1000+ 时尚品牌广告主。
+                <% } %>
+			</label>	
+		</div>
+
+        <div id="post-author-div" class="post-div-container">
+            <table>
+                <tr>
+                    <td class="post-table-black-label" colspan="3">
+                        <%= rawParameters.type == 'm' ? '推广需求方' : '推广服务商' %>
+                        <span class="post-description">（让大家认识下你或者认识下品牌）</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td rowspan="2">
+                        <img src="http://paifan.me/index/images/post/upload_avatar.png" alt="头像设置" class="img-button" id="post-update-avatar-img" />
+                    </td>
+                    <td class="post-table-gray-label">名字</td>
+                    <td>
+                        <input type="text" id="post-name-input" class="post-small">
+                        <input type="hidden" id="post-avatar-input">
+                    </td>
+                    <td rowspan="2">
+                        <textarea name="" id="post-selfdesc-input" cols="30" rows="10" class="post-multi" placeholder="介绍下自己活介绍下品牌（不超过 500 字）" maxlength="500"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="post-table-gray-label">角色</td>
+                    <td>
+                        <select name="author_role" id="post-job-input" class="post-small">
+                            <option value="">-- 请选择 --</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="post-table-gray-label">设置个人或品牌头像</td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="post-cover-div" class="post-div-container">
+            <table>
+                <tr>
+                    <td class="post-table-black-label"><%= rawParameters.type == 'm' ? '推广需求封面' : '推广服务封面' %> <span class="must-label">&nbsp;*&nbsp;</span>
+                    <span class="post-description">（为保证显示效果，图片宽高不能低于 640 像素）</span></td>
+                </tr>
+
+                <tr>
+                    <td id="suit_cover">
+                        <div class="cover-add"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="must-label" id="suit_cover_msg"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="post-article-div" class="post-div-container">
+            <table>
+                <tr>
+                    <td class="post-table-black-label"> <%= rawParameters.type == 'm' ? '推广需求标题' : '推广服务标题' %> <span class="must-label">&nbsp;*&nbsp;</span></td>
+                    <td><input type="text" name="title" id="post-title-input" class="post-small" placeholder="不超过 33 个字。" maxlength="33"></td>
+                </tr>
+                <tr>
+                    <td class="post-table-black-label">报名截止时间 <span class="must-label">&nbsp;*&nbsp;</span></td>
+                    <td><input type="datetime-local" class="post-small"></td>
+                </tr>
+                <tr>
+                    <td class="post-table-black-label">推广开始时间 <span class="must-label">&nbsp;*&nbsp;</span></td>
+                    <td><input type="datetime-local" class="post-small"></td>
+                </tr>
+                <tr>
+                    <td class="post-table-black-label">推广结束时间 <span class="must-label">&nbsp;*&nbsp;</span></td>
+                    <td><input type="datetime-local" class="post-small"></td>
+                </tr>
+                <tr>
+                    <td class="post-table-black-label"><%= rawParameters.type =='m' ? '期望推广渠道': '推广宣传渠道' %> <span class="must-label">&nbsp;*&nbsp;</span></td>
+                    <td><input id="post-channel-input" type="text" class="post-small" maxlength="100"></td>
+                </tr>
+                <tr>
+                    <td class="post-table-black-label">参加名额限制 <span class="must-label">&nbsp;*&nbsp;</span></td>
+                    <td><input type="text" class="post-small"></td>
+                </tr>
+                <tr>
+                    <td class="post-table-black-label"><%= rawParameters.type =='m' ? '推广预算': '推广报价' %> <span class="must-label">&nbsp;*&nbsp;</span></td>
+                    <td><input type="number" min="0" max="999999999" step="1000" class="post-small">&nbsp;&nbsp;元</td>
+                </tr>
+                <tr>
+                    <td class="post-table-black-label"><%= rawParameters.type =='m' ? '推广需求详情': '推广服务详情' %> <span class="must-label">&nbsp;*&nbsp;</span></td>
+                    <td><textarea id="content">chengang has ill.</textarea></td>
+                </tr>
+            </table>
+        </div>
+
+        </form>
+    </body>
+</html>
