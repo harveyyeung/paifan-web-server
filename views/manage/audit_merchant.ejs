@@ -86,7 +86,7 @@
                         <td>
                             <a class='yellow-button' onclick='viewMerchantInfo(<%= merchantInfo.userId %>);'>查看</a>
                             
-                            <% if (merchantInfo.merchantInfoStatus != 'a' && merchantInfo.merchantInfoStatus != 'r') { %>
+                            <% if (merchantInfo.merchantInfoStatus != 'a') { %>
                                 <a class='green-button' onclick='approveMerchantInfo(<%= merchantInfo.userId %>);'>批准</a>
                             <% } %>
                             

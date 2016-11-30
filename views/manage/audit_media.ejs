@@ -86,7 +86,7 @@
                         <td>
                             <a class='yellow-button' onclick='viewMediaInfo(<%= mediaInfo.userId %>);'>查看</a>
                             
-                            <% if (mediaInfo.mediaInfoStatus != 'a' && mediaInfo.mediaInfoStatus != 'r') { %>
+                            <% if (mediaInfo.mediaInfoStatus != 'a') { %>
                                 <a class='green-button' onclick='approveMediaInfo(<%= mediaInfo.userId %>);'>批准</a>
                             <% } %>
                             
