@@ -613,13 +613,20 @@ h1.post-div-title {
 }
 
 #post-message-div {
+	background-image: url(http://paifan.me/index/images/post/holder.png);
+	background-repeat: no-repeat;
+	background-position: 10px 26px;
+}
+
+#post-submit-div {
+	text-align: center;
+}
+
+#post-message-div, #post-submit-div {
 	height:400px;
 	height:auto;
 	margin-top: 10px;
 	margin-bottom: 8px;
-	background-image: url(http://paifan.me/index/images/post/holder.png);
-	background-repeat: no-repeat;
-	background-position: 10px 26px;
 	vertical-align: middle;
 	line-height: 114px;
 }
@@ -1210,4 +1217,24 @@ table.detail {
     top: 120px;
     left: 50%;
     margin-left: -500px;
+}
+
+input.error {
+	border-color: red;
+}
+
+.error::-webkit-input-placeholder {
+	color: red;
+}
+
+.error:-moz-placeholder { /* Firefox 18- */
+	color: red;  
+}
+
+.error::-moz-placeholder {  /* Firefox 19+ */
+	color: red;  
+}
+
+.error:-ms-input-placeholder {  
+	color: red;  
 }
