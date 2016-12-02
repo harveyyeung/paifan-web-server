@@ -9,8 +9,21 @@ router.get('/publish/:type/:userId', function(req, res, next) {
     res.render('publish/promotion.ejs', {
         rawParameters: {
             type: req.params.type,
-            userId: req.params.userId
+            userId: req.params.userId,
+            baseUrl: config['extranet-server-url'][current_env]
         }
+    });
+});
+
+router.post('/add/:type/:userId', function(req, res, next) {
+    return merchantServiceInterface.postNewPromotion(req.params.type, req.params.userId, req.body).then(result => {
+        return res.send(result);
+    }).catch(err => {
+        res.status(500);
+        return res.send({
+            type: 'Error',
+            message: err.message
+        });
     });
 });
 

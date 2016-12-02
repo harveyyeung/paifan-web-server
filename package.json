@@ -16,6 +16,8 @@
     "q": "~1.0",
     "bluebird": "latest",
     "request": "latest",
-    "log4js": "latest"
+    "log4js": "latest",
+    "qiniu": "latest",
+    "node-uuid": "latest"
   }
 }

@@ -5,21 +5,26 @@
         <title>发布推广信息</title>
         <link rel="stylesheet" href="/stylesheets/style_activity.css" />
         <link rel="stylesheet" href="/scripts/jqueryui/jquery-ui.min.css" />
+        <link rel="stylesheet" href="/scripts/jqueryui/plugins/datetime/jquery.datetimepicker.css" />
         <link rel="Shortcut Icon" href="/favicon.png">
         <meta charset="utf-8">
         <script src="/scripts/jquery-3.1.0.min.js"></script>
         <script type="text/javascript" src="/plugins/tinymce/tinymce.min.js"></script>
         <script type="text/javascript" src="/scripts/jqueryui/jquery-ui.min.js"></script>
         <script type="text/javascript" src="/scripts/image-upload.js"></script>
+        <script type="text/javascript" src="/scripts/jqueryui/plugins/datetime/jquery.datetimepicker.full.min.js"></script>
         <script>
+            baseUrl = '<%= rawParameters.baseUrl %>';
+
             tinymce.init({
                 selector: 'textarea#textarea-content',
-                toolbar: "bold italic underline strikethrough | cut copy paste | image",
-                plugins: "image imagetools",
+                toolbar: "forecolor backcolor | bold italic underline strikethrough | cut copy paste | image",
+                plugins: "image imagetools textcolor",
                 language: 'zh_CN',
                 menu: {
                     edit: {title: '编辑', items: 'undo redo | cut copy paste pastetext | selectall'},
-                    format: {title: '格式', items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'},
+                    color: {title: '字体', items: 'formats'},
+                    format: {title: '格式', items: 'forecolor backcolor | bold italic underline strikethrough superscript subscript | removeformat'},
                 },
                 height: 300,
                 width: 650
@@ -42,10 +47,53 @@
                     return;
                 }
 
+                if (!confirm('提交后便不能再修改。您确认要提交此推广信息吗？')) 
+                    return;
+
+                setSubmitButtonVisibility(false);
+
                 data.push({name: 'avatar', value: encodeURIComponent($('#post-update-avatar-img').attr('src'))});
                 data.push({name: 'folder', value: encodeURIComponent($('#img-folder').attr('src'))});
                 data.push({name: 'content', value: content});
 
+                $.ajax({
+                    type: "POST",
+                    data: data,
+                    dataType: "json",
+                    url: getSubmitUrl(),
+                    async: true,
+                    success: function (obj) {
+                        if (obj.type && obj.type == 'Error') {
+                            alert('发布失败：' + obj.message);
+                        } else {
+                            alert(obj.message);
+                        }
+                        setSubmitButtonVisibility(true);
+                    },
+                    error: function (obj) {
+                        setSubmitButtonVisibility(true);
+
+                        if (obj.responseText)
+                            alert('发布失败：' + JSON.parse(obj.responseText).message);
+                        else
+                            alert('发布失败，请检查您的网络连接，然后再试一次。');
+                    }
+                });
+
+            }
+
+            function getSubmitUrl() {
+                return baseUrl + "promotion/add/<%= rawParameters.type %>/<%= rawParameters.userId %>";
+            }
+
+            function setSubmitButtonVisibility(isVisible) {
+                if (isVisible) {
+                    $('#submit-button').show(100);
+                    $('#submit-waiting-div').hide(100);
+                } else {
+                    $('#submit-button').hide(100);
+                    $('#submit-waiting-div').show(100);
+                }
             }
 
             function checkFields() {
@@ -65,7 +113,7 @@
 
                 var deadlineControl = $('input[name=deadline]');
                 var deadline = tryParseDate(deadlineControl.val());
-                if (!deadline || deadline < (new Date()).getTime()) {
+                if (!deadline) {
                     toggleInputError(deadlineControl, false);
                     result = false;
                 } else {
@@ -73,8 +121,8 @@
                 }
 
                 var startTimeControl = $('input[name=startTime]');
-                var startTime = tryParseDate(deadlineControl.val());
-                if (!startTime || startTime < (new Date()).getTime()) {
+                var startTime = tryParseDate(startTimeControl.val());
+                if (!startTime) {
                     toggleInputError(startTimeControl, false);
                     result = false;
                 } else {
@@ -129,7 +177,8 @@
                     $('#error-' + jControl.attr('name')).hide();
                 } else {
                     jControl.addClass('error');
-                    $('#error-' + jControl.attr('name')).show();
+                    $('#error-' + jControl.attr('name')).hide();
+                    $('#error-' + jControl.attr('name')).show(250);
                 }
             }
 
@@ -168,7 +217,7 @@
                     width: targetWidth + 200,
                     modal: true,
                     buttons: {
-                        "提交": function() {
+                        "上传": function() {
                             $(imageLoaderTargetImgObject).attr('src', getImageLoaderImage());
                             dialog.dialog('close');
                         },
@@ -179,7 +228,7 @@
                 });
 
                 dialog.dialog('open');
-            }
+            };
 
             $(document).ready(function() {
                 initImageLoader();
@@ -190,6 +239,8 @@
                         toggleInputError($(this), true);
                     }
                 });
+                $.datetimepicker.setLocale('ch');
+                $('#deadline,#startTime,#endTime').datetimepicker({value: new Date()});
             })
         </script>
     </head>
@@ -243,6 +294,19 @@
                     <td>
                         <select name="role" id="post-job-input" class="post-small">
                             <option value="">-- 请选择 --</option>
+                            <option value="品牌">品牌</option>
+                            <option value="时尚博主">时尚博主</option>
+                            <option value="搭配师">搭配师</option>
+                            <option value="时尚达人">时尚达人</option>
+                            <option value="买手">买手</option>
+                            <option value="形象设计师">形象设计师</option>
+                            <option value="集成店">集成店</option>
+                            <option value="陪购师">陪购师</option>
+                            <option value="衣橱整理师">衣橱整理师</option>
+                            <option value="自营店">自营店</option>
+                            <option value="体验店">体验店</option>
+                            <option value="摄影师">摄影师</option>
+                            <option value="买手店">买手店</option>
                         </select>
                     </td>
                 </tr>
@@ -261,7 +325,7 @@
 
                 <tr>
                     <td id="suit_cover">
-                        <img src="http://paifan.me/index/images/post/upload_cover.png" id="img-folder" name="folder" onclick="uploadImage(640, this);" class="img-button" style="width:320px;height:320px">
+                        <img src="http://paifan.me/index/images/post/upload_cover.png" id="img-folder" onclick="uploadImage(640, this);" class="img-button" style="width:320px;height:320px">
                         <span class="must-label" id="error-folder" style="display:none;">&nbsp;&nbsp;请上传推广封面。</span>
                     </td>
                 </tr>
@@ -279,15 +343,15 @@
                 </tr>
                 <tr>
                     <td class="post-table-black-label">报名截止时间 <span class="must-label">&nbsp;*&nbsp;</span></td>
-                    <td><input type="datetime-local" name="deadline" class="post-small"><span id="error-deadline" class="must-label" style="display:none;">&nbsp;&nbsp;报名时间输入无效。</span></td>
+                    <td><input type="text" id="deadline" name="deadline" class="post-small"><span id="error-deadline" class="must-label" style="display:none;">&nbsp;&nbsp;报名截止时间输入无效。</span></td>
                 </tr>
                 <tr>
                     <td class="post-table-black-label">推广开始时间 <span class="must-label">&nbsp;*&nbsp;</span></td>
-                    <td><input type="datetime-local" name="startTime" class="post-small"><span id="error-startTime" class="must-label" style="display:none;">&nbsp;&nbsp;开始时间输入无效。</span></td>
+                    <td><input type="text" id="startTime" name="startTime" class="post-small"><span id="error-startTime" class="must-label" style="display:none;">&nbsp;&nbsp;开始时间输入无效。</span></td>
                 </tr>
                 <tr>
                     <td class="post-table-black-label">推广结束时间 <span class="must-label">&nbsp;*&nbsp;</span></td>
-                    <td><input type="datetime-local" name="endTime" class="post-small"><span id="error-endTime" class="must-label" style="display:none;">&nbsp;&nbsp;结束时间输入无效。</span></td>
+                    <td><input type="text" id="endTime" name="endTime" class="post-small"><span id="error-endTime" class="must-label" style="display:none;">&nbsp;&nbsp;结束时间输入无效。</span></td>
                 </tr>
                 <tr>
                     <td class="post-table-black-label"><%= rawParameters.type =='m' ? '期望推广渠道': '推广宣传渠道' %> <span class="must-label">&nbsp;*&nbsp;</span></td>
@@ -303,14 +367,17 @@
                 </tr>
                 <tr>
                     <td class="post-table-black-label"><%= rawParameters.type =='m' ? '推广需求详情': '推广服务详情' %> <span class="must-label">&nbsp;*&nbsp;</span></td>
-                    <td><textarea name="content" id="textarea-content"></textarea></td>
+                    <td><textarea id="textarea-content"></textarea></td>
                 </tr>
             </table>
             
         </div>
         <div class="post-div-container" id="post-submit-div">
-            <div class="button-red-big" style="padding: 15px 100px" onclick="submitForm();">
+            <div class="button-red-big" style="padding: 15px 100px" onclick="submitForm();" id="submit-button">
                 <%= rawParameters.type =='m' ? '发布需求': '发布服务' %>
+            </div>
+            <div id="submit-waiting-div" style="display:none;">
+                正在提交，请稍等。
             </div>
         </div>
         </form>

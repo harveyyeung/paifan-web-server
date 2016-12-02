@@ -1,6 +1,7 @@
 {
     "product-configuration": {
-        "httpTimeout": 16000
+        "httpTimeout": 35000,
+        "qiniuBucket": "managelist"
     },
     "service-connection": {
         "development": {
@@ -29,5 +30,11 @@
     "extranet-server-url": {
         "development": "http://127.0.0.1:3000/",
         "production": ""
+    },
+    "keys": {
+        "qiniu": {
+            "access-key": "",
+            "secret-key": ""
+        }
     }
 }

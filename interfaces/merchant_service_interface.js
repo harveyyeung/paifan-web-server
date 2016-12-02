@@ -119,3 +119,17 @@ exports.requestAuditMedia = function (userId, auditStatus, rejectedReason) {
         return body;
     });
 };
+
+exports.postNewPromotion = function (type, userId, data) {
+    var url = urls['addPromotion'].replace(':type', type)
+                                  .replace(':userId', userId);
+
+    return request.postAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout,
+        form: data,
+    }).spread((res, body) => {
+        return body;
+    });
+};

@@ -21,8 +21,8 @@ app.set('view engine', 'ejs');
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.png')));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: 4 * 1024 * 1024}));
+app.use(bodyParser.urlencoded({limit: 4 * 1024 * 1024, extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

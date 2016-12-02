@@ -14,6 +14,7 @@
         "getMerchantAuditList": "/audit/merchant/list/:auditStatus",
         "getUserInformation": "/user/info/:userId",
         "auditMerchantInfo": "/audit/merchant/:userId/:auditStatus/:rejectedReason",
-        "auditMediaInfo": "/audit/media/:userId/:auditStatus/:rejectedReason"
+        "auditMediaInfo": "/audit/media/:userId/:auditStatus/:rejectedReason",
+        "addPromotion": "/promotion/add/:type/:userId"
     }
 }
