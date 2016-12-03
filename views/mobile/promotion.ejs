@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+    <head>
+        <% include ../common/mobile_header %>
+        <title><%= promotion.title %></title>
+        <script>
+            baseUrl = '<%= rawParameters.baseUrl %>';
+            function formatDate(date) {
+                date = new Date(date);
+                return date.getFullYear() + ' 年 ' + (date.getMonth() + 1) + ' 月 ' + date.getDate() + ' 日 ' + date.getHours() + ':' + date.getMinutes();
+            }
+
+            function loadDetail() {
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: baseUrl + "promotion/detail/" + '<%= rawParameters.promotionId %>',
+                    async: true,
+                    success: function (detail) {
+                        if (!detail || (detail.type && detail.type == 'Error')) {
+                            alert('推广信息加载失败。' + detail ? detail.message : '');
+                            $('#content').text(detail ? detail.message : '');
+                        } else {
+                            $('#content').html(decodeURIComponent(detail.content));
+                            $('#folder').attr('src', decodeURIComponent(detail.folder));
+                            $('#avatar').attr('src', decodeURIComponent(detail.avatar));
+                        }
+                    },
+                    error: function (obj) {
+                        $('#content').text('推广信息加载失败。请刷新页面，再试一次。');
+                        alert('推广信息加载失败。' + obj.responseText ? JSON.parse(obj.responseText).message : '');
+                    }
+                });
+            }
+
+            $(document).ready(function () {
+                $('#deadline').text(formatDate('<%= promotion.deadline %>'));
+                $('#promotionTime').text(formatDate('<%= promotion.startTime %>') + " ~ " + formatDate('<%= promotion.endTime %>'))
+                loadDetail();
+            });
+        </script>
+    </head>
+
+    <body class="mobile">
+        <div class="mobile-title-folder-full">
+            <img id="folder" src="http://image.paifan.me/placeholder640.png" class="mobile-folder">
+            <div class="mobile-title-float-bottom">
+                <h3 class="mobile"><%= promotion.title %></h3>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="paragraph">
+                <span class="highlight">报名截止：</span> <span id="deadline"></span>
+            </div>
+
+            <div class="paragraph">
+                <span class="highlight">推广时间：</span>
+                    <span id="promotionTime"></span>
+            </div>
+
+            <div class="paragraph">
+                <span class="highlight">
+                    <%= promotion.type == 'm' ? '期望渠道：' : '推广渠道' %>
+                </span>
+                <%= promotion.promotionChannel %>
+            </div>
+
+            <div class="paragraph">
+                <span class="highlight">
+                    <%= promotion.type == 'm' ? '推广预算：' : '推广报价' %>
+                </span>
+                <%= promotion.budget %> 元
+            </div>
+
+            <div class="paragraph" id="content">
+                加载推广详情中……
+            </div>
+        </div>
+
+        <div class="mobile-detail-author-bar">
+            <h4 class="inline"> <%= promotion.type == 'm' ? '时尚广告主' : '营销服务商' %> </h4>
+            （版权所有，未经允许禁止转载）
+        </div>
+
+        <table class="no-border author">
+            <tr>
+                <td rowspan="4" class="mobile-author-image">
+                    <img id="avatar" src="http://image.paifan.me/placeholder640.png" alt="作者" class="mobile-detail-author-buttom">
+                </td>
+                <td>
+                    <span id="name" class="bold"><%= promotion.name == "" ? '小范' : promotion.name %></span>
+                </td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <td>
+                    <span id="role" class="role"><%= promotion.role == "" ? '时尚隐士' : promotion.role %></span>
+                </td>
+            </tr>
+            <tr>
+                <td id="selfDescription">
+                    <%= promotion.selfDescription %>
+                </td>
+            </tr>
+        </table>
+    </body>
+
+<html>

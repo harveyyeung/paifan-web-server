@@ -9,7 +9,7 @@ a {
 body.mobile {
   max-width: 640px;
   min-width: 320px;
-  margin: 0;
+  margin: auto;
   padding: 0 0 30px 0;
   font: 1rem/1.2 "Helvetica Neue",Helvetica,STHeiTi,sans-serif;
 }
@@ -20,6 +20,31 @@ div.mobile-title-folder {
   overflow: hidden;
   width: 100%;
   height: 160px;
+}
+
+div.paragraph {
+  padding: 5px;
+}
+
+div.content {
+  padding: 5px 0;
+  width: 100%;
+}
+
+span.highlight {
+  color: #fb5240;
+}
+
+div.mobile-title-folder-full {
+  padding: 40px 0 0 0;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 640px;
+}
+
+img.mobile-folder {
+  width: 100%;
 }
 
 img.mobile-title-folder {
@@ -243,4 +268,58 @@ table th, body table td {
 
 .yellow-button:hover {
     background-color: #f89406;
+}
+
+div.mobile-detail-author-bar {
+  width: 100%;
+  margin-top: 20px;
+  padding: 10px 0 10px 10px;
+  color: white;
+  background-color: #fb5240;
+  font-size: 0.8rem;
+}
+
+span.white {
+  color: white;
+}
+
+td.mobile-author-image {
+  width: 30px;
+}
+
+img.mobile-detail-author-buttom {
+    border-radius: 50%;
+    width: 128px;
+    height: 128px;
+}
+
+span.bold {
+  font-weight: bold;
+}
+
+span.role {
+  background-color: black;
+  color: white;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 3px 5px 3px 5px;
+}
+
+h3.mobile {
+  font-size: 1.2rem;
+  margin: 15px 0;
+}
+
+h4.inline {
+  font-size: 1.1rem;
+  display: inline;
+}
+
+table.no-border td {
+  border: 0px;
+  border-spacing: 0px;  
+}
+
+table.author {
+  margin: 20px 0;
 }

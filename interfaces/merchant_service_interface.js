@@ -130,6 +130,30 @@ exports.postNewPromotion = function (type, userId, data) {
         timeout: timeout,
         form: data,
     }).spread((res, body) => {
-        return body;
+        return parseResponseMessage(body);
     });
 };
+
+exports.requestPromotionInformation = function (promotionId) {
+    var url = urls['getPromotion'].replace(':promotionId', promotionId);
+
+    return request.getAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout,
+    }).spread((res, body) => {
+        return parseResponseMessage(body);
+    });
+};
+
+exports.requestPromotionDetail = function(promotionId) {
+    var url = urls['getPromotionDetail'].replace(':promotionId', promotionId);
+
+    return request.getAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout,
+    }).spread((res, body) => {
+        return parseResponseMessage(body);
+    });
+}
