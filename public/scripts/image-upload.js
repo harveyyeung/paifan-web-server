@@ -129,7 +129,7 @@ function getImageLoaderImage() {
         return null;
     }
 
-    var result = canvas.toDataURL('image/jpeg', 0.6);
+    var result = canvas.toDataURL('image/jpeg', 0.55);
     //alert(result.length);
     return result;
 }

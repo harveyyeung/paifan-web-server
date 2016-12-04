@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+    <head>
+        <title>发布推广信息</title>
+        <link rel="stylesheet" href="/stylesheets/style_activity.css" />
+        <link rel="Shortcut Icon" href="/favicon.png">
+        <meta charset="utf-8">
+        <script src="/scripts/jquery-3.1.0.min.js"></script>
+        <script>
+            baseUrl = '<%= rawParameters.baseUrl %>'
+            
+            function openPromotion(id, status) {
+                if (status == 'e') {
+                    window.open(baseUrl + 'promotion/publish/update/' + id + "/<%= rawParameters.userId %>/<%= user.telMask %>", "_blank");
+                } else {
+                    window.open(baseUrl + 'promotion/' + id, "_blank");
+                }
+            }
+
+            function filterPromotions(status) {
+                window.location = baseUrl + 'promotion/list/<%= rawParameters.userId %>/all/' + status + '/<%= user.telMask %>'; 
+            }
+
+            $(document).ready(function () {
+                $('#f-<%= rawParameters.status %>').addClass('active');
+            });
+        </script>
+    </head>
+
+    <body>
+        <% include ../common/top_bar %>
+
+        <div class="container start">
+            <ul class="filter">
+                <li id="f-all" onclick="filterPromotions('all');">全部</li>
+                <li id="f-s" onclick="filterPromotions('s');">未发布</li>
+                <li id="f-p" onclick="filterPromotions('p');">待审核</li>
+                <li id="f-a" onclick="filterPromotions('a');">审核通过</li>
+                <li id="f-x" onclick="filterPromotions('x');">被下架</li>
+            </ul>
+        </div>
+
+        <div class="container">
+            <% promotions.forEach(function (promotion) { %>
+                <div class="mypost-div" onclick="openPromotion(<%= promotion.id %>, '<%= promotion.status %>')">
+                    <img src="<%= decodeURIComponent(promotion.folderPreview) %>" alt="推广" class="mypost">
+                    <div class="text">
+                        <%= promotion.statusString %>
+                    </div>
+                    <div class="description">
+                        <%= promotion.title %>
+                    </div>
+                </div>
+            <% }) %>
+            <% if (!promotions || promotions.length == 0) { %>
+                <br/>
+                没有找到相关的推广信息。
+            <% } %>
+        </div>
+
+        <% include ../common/bottom_bar %>
+    </body>
+</html>

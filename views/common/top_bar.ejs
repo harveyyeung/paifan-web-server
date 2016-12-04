@@ -1,0 +1,63 @@
+        <div class="fixed-bar">
+            <div class="title">
+                <div class="titleBar">
+                    <div class="logo-title-bar">
+                        <a href="http://www.paifan.me" class="title-top-logo"></a>
+                    </div>
+                    <div class="right-title-div">
+                        <a href="http://paifan.me/suit/post.html"><div class="button-red title-top-button" id="title-post-button">发布攻略/推广</div></a>
+                        <img id="post-update-avatar-img-tiny" src="<%= user ? user.avatar : '' %>" class="title-avatar">
+                        <div class="title-name"><%= user ? user.nickName : '' %></div>
+                    </div>
+                </div>
+                <div class="float-menu" id="title-menu">
+                    <ul class="float-menu">
+                        <li class="float-menu">
+                            <a id="create-weizhan" href="http://paifan.me/suit/mypost.html?target=weizhan&amp;id=<%= rawParameters.userId %>" target="_blank" class="float-menu">创建微站</a>
+                        </li>
+                        <li class="line"></li>
+                        <li class="float-menu">
+                            <a href="http://paifan.me/suit/mypost.html" class="float-menu">我的攻略</a>
+                        </li>
+                        <li class="line"></li>
+                        <li class="float-menu">
+                            <a href="http://paifan.me/wx/promotion/list/<%= rawParameters.userId %>/all/all/<%= user.telMask %>" target="_blank" class="float-menu">我的推广</a>
+                        </li>
+                        <li class="line"></li>
+                        <li class="float-menu">
+                            <a target="_top" href="http://paifan.me/front/logout.html" class="float-menu">退出登录</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <script>
+                    $(function() {
+                        $(document).ready(function() {
+                            $('div.title-name').hover(
+                            function(e) {
+                                $('#title-menu').css('display','inline');
+                                var p = $('img.title-avatar').position();
+                                $('#title-menu').css({top: p.top + 80, left: p.left});
+                            });
+                            
+                            $('img.title-avatar').hover(
+                            function(e) {
+                                $('#title-menu').css('display','inline');
+                                var p = $('img.title-avatar').position();
+                                $('#title-menu').css({top: p.top + 80, left: p.left});
+                            });
+                            
+                            $('#title-menu').hover(
+                            function(e) {
+                                $(this).css('display','inline');
+                                var p = $('img.title-avatar').position();
+                                $(this).css({top: p.top + 80, left: p.left});
+                            },
+                            function(e) {
+                                $(this).slideUp(300);
+                            });
+                        });
+                    });
+            </script>
+            </div>
+        </div>

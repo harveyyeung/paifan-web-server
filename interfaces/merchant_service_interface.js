@@ -27,6 +27,20 @@ var translateStatusString = function (status) {
         return '未知';
 };
 
+var translatePromotionStatusString = function (status) {
+    if (!status || status == 'e') {
+        return '待提交';
+    } else if (status == 'p') {
+        return '待审核';
+    } else if (status == 'r') {
+        return '退回修改';
+    } else if (status == 'a') {
+        return '审核通过';
+    } else if (status == 'x') {
+        return '被下架';
+    }
+};
+
 exports.requestMediaAuditList = function (auditStatus) {
     if (!auditStatus)
         auditStatus = 'all';
@@ -134,6 +148,19 @@ exports.postNewPromotion = function (type, userId, data) {
     });
 };
 
+exports.postUpdatePromotion = function (promotionId, data) {
+    var url = urls['updatePromotion'].replace(':promotionId', promotionId);
+
+    return request.postAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout,
+        form: data,
+    }).spread((res, body) => {
+        return parseResponseMessage(body);
+    });
+};
+
 exports.requestPromotionInformation = function (promotionId) {
     var url = urls['getPromotion'].replace(':promotionId', promotionId);
 
@@ -156,4 +183,21 @@ exports.requestPromotionDetail = function(promotionId) {
     }).spread((res, body) => {
         return parseResponseMessage(body);
     });
-}
+};
+
+exports.requestPromotions = function (userId, type, status) {
+    var url = urls['getPromotions'].replace(':userId', userId)
+                                   .replace(':type', type)
+                                   .replace(':status', status);
+
+    return request.getAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout,
+    }).spread((res, body) => {
+        var obj = parseResponseMessage(body);
+        if (obj == null) return [];
+        obj.forEach(p => { p.statusString = translatePromotionStatusString(p.status)});
+        return obj;
+    });                    
+};

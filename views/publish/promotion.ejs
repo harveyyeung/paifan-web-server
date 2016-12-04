@@ -15,6 +15,7 @@
         <script type="text/javascript" src="/scripts/jqueryui/plugins/datetime/jquery.datetimepicker.full.min.js"></script>
         <script>
             baseUrl = '<%= rawParameters.baseUrl %>';
+            editingPromotionId = <%= promotionId %>;
 
             tinymce.init({
                 selector: 'textarea#textarea-content',
@@ -30,7 +31,7 @@
                 width: 650
             });
 
-            function submitForm() {
+            function submitForm(isPreview) {
                 if (!checkFields()) return;
 
                 var data = $('#promotion-form').serializeArray();
@@ -47,14 +48,20 @@
                     return;
                 }
 
-                if (!confirm('提交后便不能再修改。您确认要提交此推广信息吗？')) 
+                if (!isPreview && !confirm('提交后便不能再修改。您确认要提交此推广信息吗？')) 
                     return;
 
                 setSubmitButtonVisibility(false);
 
+                if (editingPromotionId > 0) 
+                    data.push({name: 'id', value: editingPromotionId});
+
+                data.push({name: 'status', value: isPreview ? 'e': 'p'});
                 data.push({name: 'avatar', value: encodeURIComponent($('#post-update-avatar-img').attr('src'))});
                 data.push({name: 'folder', value: encodeURIComponent($('#img-folder').attr('src'))});
                 data.push({name: 'content', value: content});
+                data.push({name: 'folderPreview', value: encodeURIComponent(folderPreviewURI)});
+                data.push({name: 'type', value: '<%= rawParameters.type %>'})
 
                 $.ajax({
                     type: "POST",
@@ -66,8 +73,12 @@
                         if (obj.type && obj.type == 'Error') {
                             alert('发布失败：' + obj.message);
                         } else {
-                            alert(obj.message);
-                            window.location = "http://paifan.me/front/activity/myPost.html";
+                            if (!isPreview) {
+                                alert(obj.message);
+                                window.location = baseUrl + "promotion/list/<%= rawParameters.userId %>/all/all/<%= user.telMask %>";
+                            } else {
+                                window.open(baseUrl + "promotion/" + obj.id, "_blank");
+                            }
                         }
                         setSubmitButtonVisibility(true);
                     },
@@ -84,15 +95,21 @@
             }
 
             function getSubmitUrl() {
-                return baseUrl + "promotion/add/<%= rawParameters.type %>/<%= rawParameters.userId %>";
+                if (editingPromotionId > 0) {
+                    return baseUrl + "promotion/update/" + editingPromotionId + "/<%= rawParameters.userId %>/<%= user.telMask %>";
+                } else {
+                    return baseUrl + "promotion/add/<%= rawParameters.type %>/<%= rawParameters.userId %>/<%= user.telMask %>";
+                }
             }
 
             function setSubmitButtonVisibility(isVisible) {
                 if (isVisible) {
                     $('#submit-button').show(100);
+                    $('#submit-preview-button').show(100);
                     $('#submit-waiting-div').hide(100);
                 } else {
                     $('#submit-button').hide(100);
+                    $('#submit-preview-button').hide(100);
                     $('#submit-waiting-div').show(100);
                 }
             }
@@ -207,19 +224,26 @@
                 }
             }
 
-            function uploadImage(targetWidth, targetImg) {
+            function uploadImage(targetWidth, targetImg, generatePreview) {
                 imageLoaderTargetImgObject = targetImg;
 
                 setImageLoaderWidth(targetWidth, targetWidth);
 
                 dialog = $('#image-select-form').dialog({
                     autoOpen: false,
-                    height: targetWidth + 230,
-                    width: targetWidth + 200,
+                    height: targetWidth + 270,
+                    width: Math.max(500, targetWidth + 150),
                     modal: true,
                     buttons: {
                         "上传": function() {
-                            $(imageLoaderTargetImgObject).attr('src', getImageLoaderImage());
+                            var uri = getImageLoaderImage();
+
+                            $(imageLoaderTargetImgObject).attr('src', uri);
+
+                            if (generatePreview) {
+                                resizedataURL(uri, 234, 234);
+                            }
+
                             dialog.dialog('close');
                         },
                         "取消": function() {
@@ -231,7 +255,115 @@
                 dialog.dialog('open');
             };
 
+            // http://stackoverflow.com/questions/20958078/resize-a-base-64-image-in-javascript-without-using-canvas
+            // Takes a data URI and returns the Data URI corresponding to the resized image at the wanted size.
+            function resizedataURL(datas, wantedWidth, wantedHeight)
+            {
+                // We create an image to receive the Data URI
+                var img = document.getElementById('folder-preview');
+
+                // When the event "onload" is triggered we can resize the image.
+                img.onload = function()
+                    {        
+                        // We create a canvas and get its context.
+                        var canvas = document.createElement('canvas');
+                        var ctx = canvas.getContext('2d');
+
+                        // We set the dimensions at the wanted size.
+                        canvas.width = wantedWidth;
+                        canvas.height = wantedHeight;
+
+                        // We resize the image with the canvas method drawImage();
+                        ctx.drawImage(this, 0, 0, wantedWidth, wantedHeight);
+
+                        folderPreviewURI = canvas.toDataURL('image/jpeg', 0.65);
+                    };
+
+                // We put the Data URI in the image's src attribute
+                img.src = datas;
+            }
+            // Use it like that : resizedataURL('yourDataURIHere', 50, 50);
+
+            function setFormData(data) {
+                var names = Object.getOwnPropertyNames(data);
+
+                for (var i = names.length - 1; i >=0; i--) {
+                    $('input[name=' + names[i] + ']').val(data[names[i]]);
+                }
+
+                if (data.selfDescription)
+                    $('textarea[name=selfDescription]').val(data.selfDescription);
+
+                if (data.avatar)
+                    $('#post-update-avatar-img').attr('src', decodeURIComponent(data.avatar));
+
+                if (data.folderPreview) {
+                    folderPreviewURI = decodeURIComponent(data.folderPreview);
+                    $('#folder-preview').attr('src', folderPreviewURI);
+                }
+
+                if (data.folder)
+                    $('#img-folder').attr('src', decodeURIComponent(data.folder));
+
+                if (data.deadline)
+                    $('#deadline').datetimepicker({value: new Date(data.deadline)});
+
+                if (data.startTime)
+                    $('#startTime').datetimepicker({value: new Date(data.startTime)});
+                
+                if (data.endTime)
+                    $('#endTime').datetimepicker({value: new Date(data.endTime)});
+
+                if (data.role) 
+                    $('select[name=role]').val(data.role);
+                
+                if (data.content)
+                    tinyMCE.get('textarea-content').setContent(decodeURIComponent(data.content));
+            }
+
             $(document).ready(function() {
+                $.datetimepicker.setLocale('ch');
+                $('#deadline,#startTime,#endTime').datetimepicker({value: new Date()});
+                if (editingPromotionId > 0) {
+                    $.ajax({
+                        type: "GET",
+                        dataType: "json",
+                        url: baseUrl + "promotion/information/" + editingPromotionId,
+                        async: true,
+                        success: function (obj) {
+                            if (obj.type && obj.type == 'Error') {
+                                alert('获取推广信息失败，请返回上一页，然后再试一次：' + obj.message);
+                                return;
+                            }
+                            setFormData(obj);
+                        },
+                        error: function (obj) {
+                            if (obj.responseText)
+                                alert('获取推广信息失败，请返回上一页，然后再试一次：' + JSON.parse(obj.responseText).message);
+                            else
+                                alert('获取推广信息失败，请返回上一页，然后再试一次。');
+                        }
+                    });
+                    $.ajax({
+                        type: "GET",
+                        dataType: "json",
+                        url: baseUrl + "promotion/detail/" + editingPromotionId,
+                        async: true,
+                        success: function (obj) {
+                            if (obj.type && obj.type == 'Error') {
+                                alert('获取推广信息（详情）失败，请返回上一页，然后再试一次：' + obj.message);
+                                return;
+                            }
+                            setFormData(obj);
+                        },
+                        error: function (obj) {
+                            if (obj.responseText)
+                                alert('获取推广信息（详情）失败，请返回上一页，然后再试一次：' + JSON.parse(obj.responseText).message);
+                            else
+                                alert('获取推广信息（详情）失败，请返回上一页，然后再试一次。');
+                        }
+                    });
+                }
                 initImageLoader();
                 $('input').blur(function () {
                     var text = $(this).val();
@@ -240,8 +372,6 @@
                         toggleInputError($(this), true);
                     }
                 });
-                $.datetimepicker.setLocale('ch');
-                $('#deadline,#startTime,#endTime').datetimepicker({value: new Date()});
             })
         </script>
     </head>
@@ -249,15 +379,9 @@
     <body id="post-body">
         <% include ../common/image_upload %>
 
-        <div class="title">
-            <div class="titleBar">
-                <div class="logo-title-bar">
-                    <a href="http://www.paifan.me" class="title-top-logo"></a>
-                </div>
-            </div>
-        </div>
+        <% include ../common/top_bar %>
 
-		<div id="post-message-div" class="post-div-container">
+		<div id="post-message-div" class="post-div-container start">
 			<label id="post-message-title">
                 <% if (rawParameters.type == 'm') { %>
                     亲爱的品牌广告主，请在下面发布您的推广需求，我们将推送给 1000+ 优质时尚自媒体。
@@ -326,7 +450,8 @@
 
                 <tr>
                     <td id="suit_cover">
-                        <img src="http://paifan.me/index/images/post/upload_cover.png" id="img-folder" onclick="uploadImage(640, this);" class="img-button" style="width:320px;height:320px">
+                        <img src="http://paifan.me/index/images/post/upload_cover.png" id="img-folder" onclick="uploadImage(480, this, true);" class="img-button" style="width:320px;height:320px">
+                        <img width="234px" height="234px" id="folder-preview" style="display:none;">
                         <span class="must-label" id="error-folder" style="display:none;">&nbsp;&nbsp;请上传推广封面。</span>
                     </td>
                 </tr>
@@ -374,13 +499,17 @@
             
         </div>
         <div class="post-div-container" id="post-submit-div">
-            <div class="button-red-big" style="padding: 15px 100px" onclick="submitForm();" id="submit-button">
+            <div class="button-red-big" style="padding: 12px 50px;border-radius:8px;" onclick="submitForm();" id="submit-button">
                 <%= rawParameters.type =='m' ? '发布需求': '发布服务' %>
+            </div>
+            <div class="button-white" style="padding: 10px 50px;margin-left: 30px;" onclick="submitForm(true);" id="submit-preview-button">
+                预览效果
             </div>
             <div id="submit-waiting-div" style="display:none;">
                 正在提交，请稍等。
             </div>
         </div>
         </form>
+        <% include ../common/bottom_bar %>
     </body>
 </html>

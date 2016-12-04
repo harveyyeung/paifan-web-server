@@ -17,6 +17,8 @@
         "auditMediaInfo": "/audit/media/:userId/:auditStatus/:rejectedReason",
         "addPromotion": "/promotion/add/:type/:userId",
         "getPromotion": "/promotion/:promotionId",
-        "getPromotionDetail": "/promotion/detail/:promotionId"
+        "getPromotionDetail": "/promotion/detail/:promotionId",
+        "getPromotions": "/promotion/list/:userId/:type/:status",
+        "updatePromotion": "/promotion/update/:promotionId"
     }
 }
