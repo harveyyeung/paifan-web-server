@@ -51,9 +51,44 @@
 
                 sendAuditRequest(promotionId, 'r', rejectedReason);
             }
+
+            $(document).ready(function () {
+                $('#select-type').val('<%= queries.type %>');
+                $('#select-audit-status').val('<%= queries.auditStatus %>');
+                $('#input-title').val('<%= queries.titleOrTelephone == "all" ? "" : queries.titleOrTelephone %>');
+            });
+
         </script>
     </head>
     <body>
+        <div>
+            <form action="<%= rawParameters.baseUrl %>manage/audit/promotion/list" method="POST"> <!-- onsubmit="return navTabSearch(this);" -->
+                <input type="hidden" name="token" value="<%= token %>">
+                <input type="hidden" name="page" value="0">
+                
+                <select id="select-type" name="type">
+                    <option value="all">-- 全部需求类型 --</option>
+                    <option value="m">推广需求（品牌）</option>
+                    <option value="s">推广服务（自媒体）</option>
+                </select>
+                
+                <select id="select-audit-status" name="auditStatus">
+                    <option value="all">-- 全部状态 --</option>
+                    <option value="e">待提交</option>
+                    <option value="p">待审核</option>
+                    <option value="a">审核通过</option>
+                    <option value="r">退回修改</option>
+                    <option value="x">已下架</option>
+                </select>
+                &nbsp;&nbsp;&nbsp;&nbsp;标题：
+                <input type="text" maxlength="50" id="input-title" name="titleOrTelephone">
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="submit" value="筛选">
+            </form>
+        </div>
+
+        <br/>
+
         <table width="1200px">
             <thead>
                 <tr>
@@ -103,6 +138,9 @@
             </tbody>
         </table>
         <br />
-        共 <%= promotions.length %> 条记录。
+        共 <%= count %> 条记录，当前显示 <%= promotions.length %> 条，第 <%= page + 1 %> 页。
+        <% if (page > 0) { %>
+            <a href="">上一页</a>
+        <% } %>
     </body>
 </html>

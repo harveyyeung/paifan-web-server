@@ -217,8 +217,11 @@ exports.requestPromotionAuditList = function (adminToken, type, auditStatus, tit
         timeout: timeout,
     }).spread((res, body) => {
         var obj = parseResponseMessage(body);
-        if (obj == null) return [];
-        obj.forEach(p => { p.statusString = translatePromotionStatusString(p.status)});
+        if (obj == null) return {
+            promotions: [],
+            count: 0
+        };
+        obj.promotions.forEach(p => { p.statusString = translatePromotionStatusString(p.status)});
         return obj;
     });                
 };

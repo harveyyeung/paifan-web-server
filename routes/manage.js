@@ -19,14 +19,76 @@ router.get('/app_tags/:token', function(req, res, next) {
     });
 });
 
-router.get('/audit/promotion/list/:adminToken/:type/:auditStatus/:titleOrTelephone/:startTime/:endTime/:page', function(req, res, next) {
-    return merchantServiceInterface.requestPromotionAuditList(req.params.adminToken, req.params.type, req.params.auditStatus,
-                                                              req.params.titleOrTelephone, req.params.startTime, req.params.endTime, req.params.page).then(promotions => {
+router.post('/audit/promotion/list', function (req, res, next) {
+    if (!req.body) {
+        return next(new Error('No body posted.'));
+    }
+
+    if (!req.body.titleOrTelephone || req.body.titleOrTelephone == "")
+        req.body.titleOrTelephone = "all";
+
+    return merchantServiceInterface.requestPromotionAuditList(req.body.token, req.body.type, req.body.auditStatus, encodeURIComponent(req.body.titleOrTelephone), "0", "0", req.body.page).then(result => {
         return res.render('manage/audit_promotion.ejs', {
-            token: req.params.adminToken,
-            promotions: promotions,
+            token: req.body.token,
+            count: result.count,
+            promotions: result.promotions,
+            page: parseInt(req.body.page),
             rawParameters: {
                 baseUrl: config['extranet-server-url'][current_env]
+            },
+            queries: {
+                type: req.body.type,
+                auditStatus: req.body.auditStatus,
+                titleOrTelephone: req.body.titleOrTelephone
+            }
+        });
+    }).catch(err => {
+        return next(err);
+    });
+});
+
+/**
+ * We are handling the STUPID framework behaviors!
+ */
+router.get('/audit/promotion/list', function (req, res, next) {
+    if (!req.query.titleOrTelephone || req.query.titleOrTelephone == "")
+        req.query.titleOrTelephone = "all";
+
+    return merchantServiceInterface.requestPromotionAuditList(req.query.token, req.query.type, req.query.auditStatus, encodeURIComponent(req.query.titleOrTelephone), "0", "0", req.query.page).then(result => {
+        return res.render('manage/audit_promotion.ejs', {
+            token: req.query.token,
+            count: result.count,
+            promotions: result.promotions,
+            page: parseInt(req.query.page),
+            rawParameters: {
+                baseUrl: config['extranet-server-url'][current_env]
+            },
+            queries: {
+                type: req.query.type,
+                auditStatus: req.query.auditStatus,
+                titleOrTelephone: req.query.titleOrTelephone
+            }
+        });
+    }).catch(err => {
+        return next(err);
+    });
+});
+
+router.get('/audit/promotion/list/:adminToken/:type/:auditStatus/:titleOrTelephone/:startTime/:endTime/:page', function(req, res, next) {
+    return merchantServiceInterface.requestPromotionAuditList(req.params.adminToken, req.params.type, req.params.auditStatus,
+                                                              req.params.titleOrTelephone, req.params.startTime, req.params.endTime, req.params.page).then(result => {
+        return res.render('manage/audit_promotion.ejs', {
+            token: req.params.adminToken,
+            count: result.count,
+            promotions: result.promotions,
+            page: parseInt(req.params.page),
+            rawParameters: {
+                baseUrl: config['extranet-server-url'][current_env]
+            },
+            queries: {
+                type: req.params.type,
+                auditStatus: req.params.auditStatus,
+                titleOrTelephone: req.params.titleOrTelephone == "all" ? "" : req.params.titleOrTelephone
             }
         });
     }).catch(err => {
