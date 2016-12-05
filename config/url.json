@@ -19,6 +19,8 @@
         "getPromotion": "/promotion/:promotionId",
         "getPromotionDetail": "/promotion/detail/:promotionId",
         "getPromotions": "/promotion/list/:userId/:type/:status",
-        "updatePromotion": "/promotion/update/:promotionId"
+        "updatePromotion": "/promotion/update/:promotionId",
+        "getPromotionAuditList": "/audit/promotion/list/:adminToken/:type/:auditStatus/:titleOrTelephone/:startTime/:endTime/:page",
+        "auditPromotion": "/audit/promotion/:promotionId/:adminToken/:auditStatus/:rejectedReason"
     }
 }

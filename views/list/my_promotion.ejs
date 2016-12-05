@@ -11,7 +11,7 @@
             baseUrl = '<%= rawParameters.baseUrl %>'
             
             function openPromotion(id, status) {
-                if (status == 'e') {
+                if (status == 'e' || status == 'r') {
                     window.open(baseUrl + 'promotion/publish/update/' + id + "/<%= rawParameters.userId %>/<%= user.telMask %>", "_blank");
                 } else {
                     window.open(baseUrl + 'promotion/' + id, "_blank");

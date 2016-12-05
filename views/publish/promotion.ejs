@@ -104,13 +104,13 @@
 
             function setSubmitButtonVisibility(isVisible) {
                 if (isVisible) {
-                    $('#submit-button').show(100);
-                    $('#submit-preview-button').show(100);
-                    $('#submit-waiting-div').hide(100);
+                    $('#submit-button').show();
+                    $('#submit-preview-button').show();
+                    $('#submit-waiting-div').hide();
                 } else {
-                    $('#submit-button').hide(100);
-                    $('#submit-preview-button').hide(100);
-                    $('#submit-waiting-div').show(100);
+                    $('#submit-button').hide();
+                    $('#submit-preview-button').hide();
+                    $('#submit-waiting-div').show();
                 }
             }
 
@@ -167,7 +167,7 @@
 
                 var budgetControl = $('input[name=budget]');
                 var budget = tryParseFloat(budgetControl.val());
-                if (!budget || budget < 0) {
+                if (budget === null || budget < 0) {
                     toggleInputError(budgetControl, false);
                     result = false;
                 } else {
@@ -319,18 +319,30 @@
                 
                 if (data.content)
                     tinyMCE.get('textarea-content').setContent(decodeURIComponent(data.content));
+                
+                if (data.status == 'r') {
+                    $('#rejected-reason-div').show();
+                    $('#rejected-reason-span').text('您的推广信息已被退回。退回理由：' + decodeURIComponent(data.lastRejectedReason));
+                }
             }
 
             $(document).ready(function() {
                 $.datetimepicker.setLocale('ch');
                 $('#deadline,#startTime,#endTime').datetimepicker({value: new Date()});
                 if (editingPromotionId > 0) {
+                    $('#loading-div').dialog({
+                        modal: true,
+                        height: 150,
+                        width: 350
+                    }).dialog('open');
+
                     $.ajax({
                         type: "GET",
                         dataType: "json",
                         url: baseUrl + "promotion/information/" + editingPromotionId,
                         async: true,
                         success: function (obj) {
+                            $('#loading-div').dialog('close');
                             if (obj.type && obj.type == 'Error') {
                                 alert('获取推广信息失败，请返回上一页，然后再试一次：' + obj.message);
                                 return;
@@ -338,6 +350,7 @@
                             setFormData(obj);
                         },
                         error: function (obj) {
+                            $('#loading-div').dialog('close');
                             if (obj.responseText)
                                 alert('获取推广信息失败，请返回上一页，然后再试一次：' + JSON.parse(obj.responseText).message);
                             else
@@ -381,6 +394,10 @@
 
         <% include ../common/top_bar %>
 
+        <div id="loading-div" title="请稍候" style="display:none">
+            <p> 正在向服务器请求数据，请稍等。 </p>
+        </div>
+
 		<div id="post-message-div" class="post-div-container start">
 			<label id="post-message-title">
                 <% if (rawParameters.type == 'm') { %>
@@ -390,6 +407,10 @@
                 <% } %>
 			</label>	
 		</div>
+
+        <div id="rejected-reason-div" class="post-div-container" style="display:none">
+            <span class="must-label" id="rejected-reason-span"></span>
+        </div>
 
         <form id="promotion-form" action="" method="post">
 

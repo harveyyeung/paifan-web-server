@@ -638,6 +638,17 @@ h1.post-div-title {
 	line-height: 114px;
 }
 
+#rejected-reason-div {
+	height:auto;
+	margin-bottom: 8px;
+	vertical-align: middle;
+	padding: 30px 0;
+}
+
+#rejected-reason-span {
+	margin-left: 20px;
+}
+
 #post-message-title {
 	margin-left: 100px;
 	font-size: 14pt;

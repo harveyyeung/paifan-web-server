@@ -51,8 +51,8 @@ router.get('/publish/update/:promotionId/:userId/:token', function(req, res, nex
             throw new Error('您只能编辑自己发布的推广信息。');
         }
 
-        if (promotion.status != 'e') {
-            throw new Error('您只能编辑尚未提交的推广信息。');
+        if (promotion.status != 'e' && promotion.status != 'r') {
+            throw new Error('您只能编辑尚未提交或退回修改的推广信息。');
         }
 
         return res.render('publish/promotion.ejs', {
@@ -163,7 +163,7 @@ router.post('/update/:promotionId/:userId/:token', function (req, res, next) {
             throw new Error('您只能编辑自己发布的推广信息。');
         }
 
-        if (promotion.status != 'e') {
+        if (promotion.status != 'e' && promotion.status != 'r') {
             throw new Error('您只能编辑尚未提交的推广信息。');
         }
 

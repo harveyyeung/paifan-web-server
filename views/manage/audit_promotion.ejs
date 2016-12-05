@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+    <head>
+        <% include ../common/head %>
+        <title>推广审核管理</title>
+        <script>
+            $(function () {
+                baseUrl = '<%= rawParameters.baseUrl %>';
+            });
+
+            function sendAuditRequest(promotionId, auditStatus, rejectedReason) {
+                var url = "<%= rawParameters.baseUrl %>manage/audit/promotion/<%= token %>/" +
+                            promotionId + "/" + auditStatus + "/" + encodeURIComponent(rejectedReason);
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: url,
+                    async: true, 
+                    success: function(obj) {
+                        alert(obj.message);
+                        window.location.reload(true);
+                    },
+                    error: function (obj) {
+                        alert(JSON.parse(obj.responseText).message);
+                    }
+                });
+            }
+
+            function approvePromotion(promotionId) {
+                if (!confirm('您确定要批准这个推广吗？')) {
+                    return;
+                }
+
+                sendAuditRequest(promotionId, 'a', '0');
+            }
+
+            function shelvePromotion(promotionId) {
+                if (!confirm('您确定要将这个推广下架吗？如果下架，未截止的推广将不接受新的报名。')) {
+                    return;
+                }
+
+                sendAuditRequest(promotionId, 'x', '0');
+            }
+
+            function rejectPromotion(promotionId) {
+                var rejectedReason = prompt('请输入退回修改的理由，不能超过 70 个字符。留空表示取消操作');
+                if (!rejectedReason || rejectedReason == '' || rejectedReason.length > 70) {
+                    return;
+                }
+
+                sendAuditRequest(promotionId, 'r', rejectedReason);
+            }
+        </script>
+    </head>
+    <body>
+        <table width="1200px">
+            <thead>
+                <tr>
+                    <th width="5%">ID</th>
+                    <th width="5%">用户编号</th>
+                    <th width="15%">推广标题</th>
+                    <th width="8%">封面</th>
+                    <th width="10%">发布时间</th>
+                    <th width="10%">截止时间</th>
+                    <th width="5%">报名/总数</th>
+                    <th width="10%">推广渠道</th>
+                    <th width="10%">发布者名称</th>
+                    <th width="8%">审核状态</th>
+                    <th width="14%">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% promotions.forEach(function (promotion) { %>
+                    <tr>
+                        <td><%= promotion.id %></td>
+                        <td><a href="<%= rawParameters.baseUrl + 'manage/audit/info/' + promotion.userId %>" target="_blank"><%= promotion.userId %><br/>(详情)</a></td>
+                        <td><%= promotion.title %></td>
+                        <td><img width="60px" height="60px" src='<%= decodeURIComponent(promotion.folderPreview) %>'></td>
+                        <td><%= promotion.entryTime %></td>
+                        <td><%= promotion.deadline %></td>
+                        <td><%= promotion.signedCount ? promotion.signedCount : 0 %> <br/>/ <%= promotion.headcount %></td>
+                        <td><%= promotion.promotionChannel %></td>
+                        <td><%= promotion.name %></td>
+                        <td><%= promotion.statusString %></td>
+                        <td>
+                            <a class='yellow-button' href="<%= rawParameters.baseUrl + 'promotion/' + promotion.id %>" target="_blank">查看</a>
+                            
+                            <% if (promotion.status != 'e' && promotion.status != 'a') { %>
+                                <a class='green-button' onclick='approvePromotion(<%= promotion.id %>);'>批准</a>
+                            <% } %>
+                            
+                            <% if (promotion.status != 'e' && promotion.status != 'r') { %>
+                                <a class='red-button' onclick='rejectPromotion(<%= promotion.id %>);'>退回</a>
+                            <% } %>
+
+                            <% if (promotion.status != 'e' && promotion.status == 'a') { %>
+                                <a class='red-button' onclick='shelvePromotion(<%= promotion.id %>);'>下架</a>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <br />
+        共 <%= promotions.length %> 条记录。
+    </body>
+</html>

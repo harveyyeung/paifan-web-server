@@ -201,3 +201,39 @@ exports.requestPromotions = function (userId, type, status) {
         return obj;
     });                    
 };
+
+exports.requestPromotionAuditList = function (adminToken, type, auditStatus, titleOrTelephone, startTime, endTime, page) {
+    var url = urls['getPromotionAuditList'].replace(':adminToken', adminToken)
+                                           .replace(':type', type)
+                                           .replace(':auditStatus', auditStatus)
+                                           .replace(':titleOrTelephone', titleOrTelephone)
+                                           .replace(':startTime', startTime)
+                                           .replace(':endTime', endTime)
+                                           .replace(':page', page);
+
+    return request.getAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout,
+    }).spread((res, body) => {
+        var obj = parseResponseMessage(body);
+        if (obj == null) return [];
+        obj.forEach(p => { p.statusString = translatePromotionStatusString(p.status)});
+        return obj;
+    });                
+};
+
+exports.requestAuditPromotion = function (adminToken, promotionId, auditStatus, rejectedReason) {
+    var url = urls['auditPromotion'].replace(':adminToken', adminToken)
+                                    .replace(':promotionId', promotionId)
+                                    .replace(':auditStatus', auditStatus)
+                                    .replace(':rejectedReason', rejectedReason);
+    
+    return request.getAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout
+    }).spread((res, body) => {
+        return body;
+    });
+};

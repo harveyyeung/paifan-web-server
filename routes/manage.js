@@ -19,6 +19,21 @@ router.get('/app_tags/:token', function(req, res, next) {
     });
 });
 
+router.get('/audit/promotion/list/:adminToken/:type/:auditStatus/:titleOrTelephone/:startTime/:endTime/:page', function(req, res, next) {
+    return merchantServiceInterface.requestPromotionAuditList(req.params.adminToken, req.params.type, req.params.auditStatus,
+                                                              req.params.titleOrTelephone, req.params.startTime, req.params.endTime, req.params.page).then(promotions => {
+        return res.render('manage/audit_promotion.ejs', {
+            token: req.params.adminToken,
+            promotions: promotions,
+            rawParameters: {
+                baseUrl: config['extranet-server-url'][current_env]
+            }
+        });
+    }).catch(err => {
+        return next(err);
+    });
+});
+
 router.get('/audit/media/list', function(req, res, next) {
     return merchantServiceInterface.requestMediaAuditList().then(result => {
         res.render('manage/audit_media.ejs', {
@@ -68,7 +83,7 @@ router.get('/audit/info/:userId', function(req, res, next) {
  */
 router.get('/audit/merchant/:userId/:auditStatus/:rejectedReason', function (req, res, next) {
     return merchantServiceInterface.requestAuditMerchant(req.params.userId, req.params.auditStatus, req.params.rejectedReason).then(message => {
-        res.send(message);
+        return res.send(message);
     }).catch(err => {
         return next(err);
     });
@@ -76,7 +91,16 @@ router.get('/audit/merchant/:userId/:auditStatus/:rejectedReason', function (req
 
 router.get('/audit/media/:userId/:auditStatus/:rejectedReason', function (req, res, next) {
     return merchantServiceInterface.requestAuditMedia(req.params.userId, req.params.auditStatus, req.params.rejectedReason).then(message => {
-        res.send(message);
+        return res.send(message);
+    }).catch(err => {
+        return next(err);
+    });
+});
+
+router.get('/audit/promotion/:adminToken/:promotionId/:auditStatus/:rejectedReason', function (req, res, next) {
+    return merchantServiceInterface.requestAuditPromotion(req.params.adminToken, req.params.promotionId, req.params.auditStatus,
+            encodeURIComponent(req.params.rejectedReason)).then(message => {
+        return res.send(message);
     }).catch(err => {
         return next(err);
     });
