@@ -161,6 +161,19 @@ exports.postUpdatePromotion = function (promotionId, data) {
     });
 };
 
+exports.postPromotionSign = function (promotionId, data) {
+    var url = urls['postPromotionSign'].replace(':promotionId', promotionId);
+
+    return request.postAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout,
+        form: data,
+    }).spread((res, body) => {
+        return parseResponseMessage(body);
+    });
+};
+
 exports.requestPromotionInformation = function (promotionId) {
     var url = urls['getPromotion'].replace(':promotionId', promotionId);
 
@@ -224,6 +237,21 @@ exports.requestPromotionAuditList = function (adminToken, type, auditStatus, tit
         obj.promotions.forEach(p => { p.statusString = translatePromotionStatusString(p.status)});
         return obj;
     });                
+};
+
+exports.requestAvailablePromotionList = function (type, hotOrNew, page) {
+    var url = urls['getAvailablePromotionList'].replace(':type', type)
+                                               .replace(':hotOrNew', hotOrNew)
+                                               .replace(':page', page);
+    
+        return request.getAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout,
+    }).spread((res, body) => {
+        var obj = parseResponseMessage(body);
+        return obj;
+    }); 
 };
 
 exports.requestAuditPromotion = function (adminToken, promotionId, auditStatus, rejectedReason) {

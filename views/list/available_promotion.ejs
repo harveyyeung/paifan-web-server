@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+    <head>
+        <title>推广信息</title>
+        <link rel="stylesheet" href="/stylesheets/style_activity.css" />
+        <link rel="Shortcut Icon" href="/favicon.png">
+        <meta charset="utf-8">
+        <script src="/scripts/jquery-3.1.0.min.js"></script>
+        <script>
+            baseUrl = '<%= rawParameters.baseUrl %>'
+            
+            function openPromotion(id, status) {
+                window.open(baseUrl + 'promotion/' + id, "_blank");
+            }
+
+            function filterPromotions(status) {
+                window.location = baseUrl + 'promotion/available/<%= user.id %>/<%= user.telMask %>/<%= rawParameters.type %>/' + status + '/0'; 
+            }
+
+            $(document).ready(function () {
+                $('#f-<%= rawParameters.hotOrNew %>').addClass('active');
+            });
+        </script>
+    </head>
+
+    <body>
+        <% include ../common/top_bar %>
+
+        <div class="container start">
+            <ul class="filter">
+                <li id="f-new" onclick="filterPromotions('new');"><%= rawParameters.type === 'm' ? '最新推广需求' : '最新推广服务' %></li>
+                <li id="f-hot" onclick="filterPromotions('hot');"><%= rawParameters.type === 'm' ? '最热推广需求' : '最热推广服务' %></li>
+            </ul>
+        </div>
+
+        <div class="container">
+            <% promotions.forEach(function (promotion) { %>
+                <div class="promotion-div-ext" onclick="openPromotion(<%= promotion.id %>)">
+                    <img src="<%= decodeURIComponent(promotion.folderPreview) %>" alt="推广" class="promotion-ext">
+                    <div class="description">
+                        <%= promotion.title %>
+                    </div>
+                    <div class="summary">
+                        <b>报名截止：</b><%= promotion.deadline %><br/>
+                        <b>推广时间：</b><%= promotion.startTime %>~<%= promotion.endTime %><br/>
+                        <b>期望渠道：</b><%= promotion.promotionChannel %><br/>
+                    </div>
+                </div>
+            <% }) %>
+            <% if (!promotions || promotions.length == 0) { %>
+                <br/>
+                没有找到相关的推广信息。
+            <% } %>
+        </div>
+
+        <% include ../common/bottom_bar %>
+    </body>
+</html>

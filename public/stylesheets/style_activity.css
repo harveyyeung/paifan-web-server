@@ -1324,6 +1324,41 @@ img.mypost {
     width: 224px;
 }
 
+div.promotion-div-ext {
+    display: inline-block;
+    border: 1px solid #999;
+    border-radius: 5px;
+    height: 294px;
+    width: 234px;
+    margin: 8px 8px;
+    position: relative;
+    cursor: pointer;
+}
+
+img.promotion-ext {
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	height: 234px;
+    width: 234px;
+}
+
+div.promotion-div-ext .description {
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+    padding: 10px 5px;
+    background-color: rgba(0,0,0,0.6);
+    color: #fff;
+    position: absolute;
+    left: 0;
+    bottom: 60px;
+    font-size: 10pt;
+    width: 224px;
+}
+
+div.promotion-div-ext .summary {
+	font-size:10pt;
+}
+
 div.start {
 	margin-top: 110px;
 }

@@ -105,13 +105,49 @@ router.get('/list/:userId/:type/:status/:token', function (req, res, next) {
             });
         });
     }).catch(err => {
-        return next(err)
+        return next(err);
+    });
+});
+
+router.get('/available/:userId/:token/:type/:hotOrNew/:page', function (req, res, next) {
+    return userServiceInterface.requestUserInformation(req.params.userId).then(user => {
+        if (!user || req.params.token !== user.telMask) {
+            throw new Error('您尚未登录或者登录已经失效。请重新登录。');
+        }
+        if (!(req.params.type === 'm' && user.userType === 3) || (req.params.type === 's' && user.userType === 2)) {
+            throw new Error('您所在的用户组无法执行此操作。');
+        }
+        return merchantServiceInterface.requestAvailablePromotionList(req.params.type, req.params.hotOrNew, req.params.page).then(promotions => {
+            return res.render('list/available_promotion.ejs', {
+                promotions,
+                user,
+                rawParameters: {
+                    type: req.params.type,
+                    hotOrNew: req.params.hotOrNew,
+                    baseUrl: config['extranet-server-url'][current_env],
+                    page: parseInt(req.params.page)
+                }
+            });
+        });
+    }).catch(err => {
+        return next(err);
     });
 });
 
 /**
  * Below are the bridges connect to Merchant Service.
  */
+router.post('/sign/:promotionId', function (req, res, next) {
+    return merchantServiceInterface.postPromotionSign(req.params.promotionId, req.body).then(result => {
+        return res.send(result);
+    }).catch(err => {
+        return res.send({
+            type: 'Error',
+            message: err.message
+        });
+    });
+});
+
 router.get('/information/:promotionId', function (req, res, next) {
     return merchantServiceInterface.requestPromotionInformation(req.params.promotionId).then(promotion => {
         if (!promotion) {

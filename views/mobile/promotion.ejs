@@ -8,7 +8,8 @@
             baseUrl = '<%= rawParameters.baseUrl %>';
             function formatDate(date) {
                 date = new Date(date);
-                return date.getFullYear() + ' 年 ' + (date.getMonth() + 1) + ' 月 ' + date.getDate() + ' 日 ' + date.getHours() + ':' + date.getMinutes();
+                return date.getFullYear() + ' 年 ' + (date.getMonth() + 1) + ' 月 ' + date.getDate() + ' 日 ' + date.getHours() + ':'
+                 + (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes());
             }
 
             function loadDetail() {
@@ -34,6 +35,56 @@
                 });
             }
 
+            function submitSign() {
+                var nameInput = $('input[name=name]');
+                var telephoneInput = $('input[name=telephone]');
+
+                if (nameInput.val() == '') {
+                    alert('请输入您的姓名。');
+                    return;
+                }
+
+                if (!(/^1[34578]\d{9}$/.test(telephoneInput.val()))) {
+                    alert('手机号输入有误，请检查后重新输入。');
+                    return;
+                }
+
+                var url = '<%= rawParameters.baseUrl %>promotion/sign/<%= rawParameters.promotionId %>';
+                $.ajax({
+                    type: "POST",
+                    data: $('#sign').serialize(),
+                    dataType: "json",
+                    url: url,
+                    async: true,
+                    success: function (obj) {
+                        if (obj.type && obj.type == 'Error') {
+                            alert('报名失败：' + obj.message);
+                        } else {
+                            alert(obj.message);
+                            closeSignForm();
+                            $('#sign-button, #sign-button-big').hide();
+                        }
+                    },
+                    error: function (obj) {
+                        if (obj.responseText)
+                            alert('报名失败：' + JSON.parse(obj.responseText).message);
+                        else
+                            alert('报名失败，请检查您的网络连接，然后再试一次。');
+                    }
+                });
+            }
+
+            function openSignForm() {
+                $('div.mask').height($(document).height());
+                $('div.mask').show();
+                $('#sign-form').show();
+            }
+
+            function closeSignForm() {
+                $('div.mask').hide();
+                $('#sign-form').hide();
+            }
+
             $(document).ready(function () {
                 $('#deadline').text(formatDate('<%= promotion.deadline %>'));
                 $('#promotionTime').text(formatDate('<%= promotion.startTime %>') + " ~ " + formatDate('<%= promotion.endTime %>'))
@@ -43,6 +94,31 @@
     </head>
 
     <body class="mobile">
+        <div class="mask"></div>
+        <div class="popup" style="display:none;" id="sign-form">
+            <div class="dialog-bar">
+                填写报名信息
+            </div>
+            <div class="dialog-content">
+                <b><%= promotion.title %></b> <!-- <br/><br/>
+                来自：<%= promotion.name %> -->
+            </div>
+            <form id="sign" action="">
+                <div class="dialog-input-placeholder">
+                    <input type="text" name="name" class="no-border" placeholder="请输入您的姓名" maxlength="20">
+                </div>
+                <div class="dialog-input-placeholder">
+                    <input type="text" name="telephone" class="no-border" placeholder="请输入您的手机号" maxlength="11">
+                </div>
+                <div class="dialog-textarea-placeholder">
+                    <textarea name="description" class="no-border" placeholder="自我介绍（可选）" maxlength="50"></textarea>
+                </div>
+            </form>
+            <div class="buttons-line">
+                <div class="button-red-big" onclick="submitSign();">立即报名</div>
+                <div class="button-white-big" onclick="closeSignForm();">以后再说</div>
+            </div>
+        </div>
         <div class="mobile-title-folder-full">
             <img id="folder" src="<%= decodeURIComponent(promotion.folderPreview) %>" class="mobile-folder">
             <div class="mobile-title-float-bottom">
@@ -53,6 +129,14 @@
         <div class="content">
             <div class="paragraph">
                 <span class="highlight">报名截止：</span> <span id="deadline"></span>
+                <% if (promotion.status == 'a') { %>
+                <%   if (promotion.deadline < new Date()) { %>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<div class="button-white">已截止</div>
+                <% } else if (promotion.headcount <= promotion.signedCount) { %>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<div class="button-white">名额已满</div>
+                <% } else { %>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<div id="sign-button" class="button-red" onclick="openSignForm();">立即报名</div>
+                <% } } %>
             </div>
 
             <div class="paragraph">
@@ -76,6 +160,17 @@
 
             <div class="paragraph" id="content">
                 加载推广详情中……
+            </div>
+
+            <div class="paragraph buttons-line">
+                <% if (promotion.status == 'a') { %>
+                <%   if (promotion.deadline < new Date()) { %>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<div class="button-white-big">已截止</div>
+                <% } else if (promotion.headcount <= promotion.signedCount) { %>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<div class="button-white-big">名额已满</div>
+                <% } else { %>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<div id="sign-button-big" class="button-red-big" onclick="openSignForm();">立即报名</div>
+                <% } } %>
             </div>
         </div>
 
@@ -107,4 +202,4 @@
         </table>
     </body>
 
-<html>
+</html>

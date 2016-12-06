@@ -99,7 +99,7 @@
                     <th width="10%">发布时间</th>
                     <th width="10%">截止时间</th>
                     <th width="5%">报名/总数</th>
-                    <th width="10%">推广渠道</th>
+                    <th width="10%">推广渠道/预算</th>
                     <th width="10%">发布者名称</th>
                     <th width="8%">审核状态</th>
                     <th width="14%">操作</th>
@@ -115,7 +115,7 @@
                         <td><%= promotion.entryTime %></td>
                         <td><%= promotion.deadline %></td>
                         <td><%= promotion.signedCount ? promotion.signedCount : 0 %> <br/>/ <%= promotion.headcount %></td>
-                        <td><%= promotion.promotionChannel %></td>
+                        <td><%= promotion.promotionChannel %><br/>/ <%= promotion.budget %> 元</td>
                         <td><%= promotion.name %></td>
                         <td><%= promotion.statusString %></td>
                         <td>
