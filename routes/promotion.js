@@ -114,7 +114,7 @@ router.get('/available/:userId/:token/:type/:hotOrNew/:page', function (req, res
         if (!user || req.params.token !== user.telMask) {
             throw new Error('您尚未登录或者登录已经失效。请重新登录。');
         }
-        if (!(req.params.type === 'm' && user.userType === 3) || (req.params.type === 's' && user.userType === 2)) {
+        if (!((req.params.type === 'm' && user.userType === 3) || (req.params.type === 's' && user.userType === 2))) {
             throw new Error('您所在的用户组无法执行此操作。');
         }
         return merchantServiceInterface.requestAvailablePromotionList(req.params.type, req.params.hotOrNew, req.params.page).then(promotions => {

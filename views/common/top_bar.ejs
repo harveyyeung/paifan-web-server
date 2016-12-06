@@ -13,7 +13,7 @@
                 <div class="float-menu" id="title-menu">
                     <ul class="float-menu">
                         <li class="float-menu">
-                            <a id="create-weizhan" href="http://paifan.me/suit/mypost.html?target=weizhan&amp;id=<%= rawParameters.userId %>" target="_blank" class="float-menu">创建微站</a>
+                            <a id="create-weizhan" href="http://paifan.me/suit/mypost.html?target=weizhan&amp;id=<%= user.id %>" target="_blank" class="float-menu">创建微站</a>
                         </li>
                         <li class="line"></li>
                         <li class="float-menu">
@@ -22,14 +22,14 @@
                         <li class="line"></li>
                         <% if (user.userType == 2 || user.userType == 3) { %>
                             <li class="float-menu">
-                                <a href="http://paifan.me/wx/promotion/list/<%= rawParameters.userId %>/all/all/<%= user.telMask %>" target="_blank" class="float-menu">
+                                <a href="http://paifan.me/wx/promotion/list/<%= user.id %>/all/all/<%= user.telMask %>" target="_blank" class="float-menu">
                                     <%= user.userType == 2 ? '我的需求': '我的服务' %>
                                 </a>
                             </li>
                             <li class="line"></li>
                             <li class="float-menu">
                                 <!-- /available/:userId/:token/:type/:hotOrNew/:page -->
-                                <a href="#" target="_blank" class="float-menu">
+                                <a href="http://paifan.me/wx/promotion/available/<%= user.id %>/<%= user.telMask %>/<%= user.userType === 2 ? 's' : 'm' %>/new/0" target="_blank" class="float-menu">
                                     <%= user.userType == 2 ? '查看服务': '查看需求' %>
                                 </a>
                             </li>

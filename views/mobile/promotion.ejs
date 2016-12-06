@@ -130,7 +130,7 @@
             <div class="paragraph">
                 <span class="highlight">报名截止：</span> <span id="deadline"></span>
                 <% if (promotion.status == 'a') { %>
-                <%   if (promotion.deadline < new Date()) { %>
+                <%   if (new Date(promotion.deadline) < new Date()) { %>
                     &nbsp;&nbsp;&nbsp;&nbsp;<div class="button-white">已截止</div>
                 <% } else if (promotion.headcount <= promotion.signedCount) { %>
                     &nbsp;&nbsp;&nbsp;&nbsp;<div class="button-white">名额已满</div>
@@ -164,7 +164,7 @@
 
             <div class="paragraph buttons-line">
                 <% if (promotion.status == 'a') { %>
-                <%   if (promotion.deadline < new Date()) { %>
+                <%   if (new Date(promotion.deadline) < new Date()) { %>
                     &nbsp;&nbsp;&nbsp;&nbsp;<div class="button-white-big">已截止</div>
                 <% } else if (promotion.headcount <= promotion.signedCount) { %>
                     &nbsp;&nbsp;&nbsp;&nbsp;<div class="button-white-big">名额已满</div>
