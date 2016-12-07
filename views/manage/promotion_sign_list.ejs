@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+    <head>
+        <% include ../common/head %>
+        <title>推广报名表</title>
+        <script>
+            $(function () {
+                baseUrl = '<%= rawParameters.baseUrl %>';
+            });
+        </script>
+    </head>
+    <body>
+        <h3><%= promotion.title %></h3>
+        <br/>
+
+        共 <%= signs.length %> 条报名信息。
+        <a href="<%= rawParameters.baseUrl + 'manage/sign/list/download/' + rawParameters.token + '/' + rawParameters.promotionId %>" >下载 csv 文件（暂未支持）</a>
+        <br/><br/>
+        <table width="1200px">
+            <thead>
+                <tr>
+                    <th width="10%">序号</th>
+                    <th width="15%">姓名</th>
+                    <th width="15%">手机号</th>
+                    <th width="60%">备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% signs.forEach(function (sign, i) { %>
+                    <tr>
+                        <td><%= i + 1 %></td>
+                        <td><%= sign.name %></td>
+                        <td><%= sign.telephone %></td>
+                        <td><%= sign.description %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </body>
+</html>

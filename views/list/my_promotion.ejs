@@ -2,14 +2,18 @@
 
 <html lang="zh-CN">
     <head>
-        <title>发布推广信息</title>
+        <title>我发布的推广</title>
         <link rel="stylesheet" href="/stylesheets/style_activity.css" />
+        <link rel="stylesheet" href="/scripts/jqueryui/jquery-ui.min.css" />
         <link rel="Shortcut Icon" href="/favicon.png">
         <meta charset="utf-8">
         <script src="/scripts/jquery-3.1.0.min.js"></script>
+        <script type="text/javascript" src="/scripts/jqueryui/jquery-ui.min.js"></script>
+        <script src="/scripts/qrcode.min.js"></script>
         <script>
             baseUrl = '<%= rawParameters.baseUrl %>'
-            
+            myShareQrCode = null;
+
             function openPromotion(id, status) {
                 if (status == 'e' || status == 'r') {
                     window.open(baseUrl + 'promotion/publish/update/' + id + "/<%= rawParameters.userId %>/<%= user.telMask %>", "_blank");
@@ -22,6 +26,27 @@
                 window.location = baseUrl + 'promotion/list/<%= rawParameters.userId %>/all/' + status + '/<%= user.telMask %>'; 
             }
 
+            function sharePromotion(id, titleEncoded) {
+                var url = baseUrl + 'promotion/' + id;
+
+                if (myShareQrCode) {
+                    myShareQrCode.clear();
+                    myShareQrCode.makeCode(url);
+                } else {
+                    myShareQrCode = new QRCode(document.getElementById('qrcode'), url);
+                }
+
+                var dialog = $('#share-form').dialog({
+                    title: decodeURIComponent(titleEncoded),
+                    autoOpen: false,
+                    height: 320,
+                    width: 290,
+                    modal: true
+                });
+
+                dialog.dialog('open');
+            }
+
             $(document).ready(function () {
                 $('#f-<%= rawParameters.status %>').addClass('active');
             });
@@ -31,28 +56,35 @@
     <body>
         <% include ../common/top_bar %>
 
+        <div id="share-form">
+            <div id="qrcode"></div>
+        </div>
+
         <div class="container start">
             <ul class="filter">
-                <li id="f-all" onclick="filterPromotions('all');">全部</li>
-                <li id="f-s" onclick="filterPromotions('s');">未发布</li>
-                <li id="f-p" onclick="filterPromotions('p');">待审核</li>
-                <li id="f-a" onclick="filterPromotions('a');">审核通过</li>
-                <li id="f-x" onclick="filterPromotions('x');">被下架</li>
+                <li id="f-all" onclick="filterPromotions('all');"><%= rawParameters.type == 'm' ? '全部需求': '全部服务' %><br/>(<%= counts['all'] %>)</li>
+                <li id="f-s" onclick="filterPromotions('s');">未发布<br/>(<%= counts['s'] === void 0 ? 0 : counts['s'] %>)</li>
+                <li id="f-p" onclick="filterPromotions('p');">待审核<br/>(<%= counts['p'] === void 0 ? 0 : counts['p'] %>)</li>
+                <li id="f-a" onclick="filterPromotions('a');">审核通过<br/>(<%= counts['a'] === void 0 ? 0 : counts['a'] %>)</li>
+                <li id="f-x" onclick="filterPromotions('x');">被下架<br/>(<%= counts['x'] === void 0 ? 0 : counts['x'] %>)</li>
             </ul>
         </div>
 
         <div class="container">
             <% promotions.forEach(function (promotion) { %>
-                <div class="mypost-div" onclick="openPromotion(<%= promotion.id %>, '<%= promotion.status %>')">
-                    <img src="<%= decodeURIComponent(promotion.folderPreview) %>" alt="推广" class="mypost">
-                    <div class="text">
-                        <%= promotion.statusString %>
+                <div class="mypromotion-div-outer">
+                    <div class="mypromotion-div-ext" onclick="openPromotion(<%= promotion.id %>, '<%= promotion.status %>')">
+                        <img src="<%= decodeURIComponent(promotion.folderPreview) %>" alt="推广" class="mypromotion-ext">
+                        <div class="text">
+                            <%= promotion.statusString %>
+                        </div>
+                        <div class="description">
+                            <%= promotion.title %>
+                        </div>
                     </div>
-                    <div class="description">
-                        <%= promotion.title %>
-                    </div>
+                    <div class="button-white my-share-button" onclick="sharePromotion(<%= promotion.id %>, '<%= encodeURIComponent(promotion.title) %>');">点击扫码分享</div>
                 </div>
-            <% }) %>
+            <% }); %>
             <% if (!promotions || promotions.length == 0) { %>
                 <br/>
                 没有找到相关的推广信息。

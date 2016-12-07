@@ -4,6 +4,10 @@ var articleServiceInterface = require('../interfaces/article_service_interface')
 var merchantServiceInterface = require('../interfaces/merchant_service_interface');
 var userServiceInterface = require('../interfaces/user_service_interface');
 var Q = require('q');
+var StringBuilder = require('string-builder');
+var iconv = require('iconv-lite');
+var json2csv = require('json2csv');
+var fs = require('fs');
 var config = require('../config/config.json');
 var current_env = process.env.NODE_ENV || "development";
 
@@ -138,6 +142,73 @@ router.get('/audit/info/:userId', function(req, res, next) {
         return next(err);
     });
 
+});
+
+router.get('/sign/list/:adminToken/:promotionId', function(req, res, next) {
+    return merchantServiceInterface.requestPromotionInformation(req.params.promotionId).then(promotion => {
+        if (!promotion) {
+            throw new Error('找不到此推广信息。  --promotionId: ' + req.params.promotionId);
+        }
+
+        return merchantServiceInterface.requestPromotionSignList(req.params.adminToken, req.params.promotionId).then(signs => {
+            return res.render('manage/promotion_sign_list.ejs', {
+                promotion,
+                signs,
+                rawParameters: {
+                    token: req.params.adminToken,
+                    promotionId: req.params.promotionId,
+                    baseUrl: config['extranet-server-url'][current_env]
+                }
+            });
+        });
+    }).catch(err => {
+        return next(err);
+    });
+});
+
+router.get('/sign/list/download/:adminToken/:promotionId', function(req, res, next) {
+    return merchantServiceInterface.requestPromotionInformation(req.params.promotionId).then(promotion => {
+        if (!promotion) {
+            throw new Error('找不到此推广信息。  --promotionId: ' + req.params.promotionId);
+        }
+
+        return merchantServiceInterface.requestPromotionSignList(req.params.adminToken, req.params.promotionId).then(signs => {
+            /*
+            var fields = ['name', 'telephone', 'description'];
+            json2csv({data: signs, fields: fields}, function (err, csv) {
+                if (err) return next(err);
+
+                var newCsv = iconv.encode(csv, 'UTF16');
+                fs.writeFile("D:\a.csv", newCsv, function (err) {
+                    return res.send('ok');
+                });
+                //res.attachment('promotion.csv');
+                //return res.send(newCsv);
+            })
+            */
+            
+            var sb = new StringBuilder();
+            //sb.append('' + promotion.title);
+            //sb.append(',,,\n');
+            sb.append('序号,姓名,手机号,备注\r\n');
+
+            signs.forEach((sign, i) => {
+                sb.append('' + (i + 1).toString());
+                sb.append(',');
+                sb.append(sign.name ? sign.name.replace(',', ' ').replace('"', ' ') : '');
+                sb.append(',');
+                sb.append(sign.telephone ? sign.telephone.replace(',', ' ').replace('"', ' ') : '');
+                sb.append(',');
+                sb.append(sign.description ? sign.description.replace(',', ' ').replace('"', ' ') : '');
+                sb.append('\r\n');
+            });
+            res.attachment('promotion.csv');
+            return res.send(iconv.encode(sb.toString(), "UTF16"));
+            
+        });
+    }).catch(err => {
+        return next(err);
+    });
 });
 
 /**

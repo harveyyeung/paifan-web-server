@@ -23,6 +23,7 @@
         "getPromotionAuditList": "/audit/promotion/list/:adminToken/:type/:auditStatus/:titleOrTelephone/:startTime/:endTime/:page",
         "auditPromotion": "/audit/promotion/:promotionId/:adminToken/:auditStatus/:rejectedReason",
         "postPromotionSign": "/promotion/sign/:promotionId",
-        "getAvailablePromotionList": "/promotion/available/:type/:hotOrNew/:page"
+        "getAvailablePromotionList": "/promotion/available/:type/:hotOrNew/:page",
+        "getPromotionSignList": "/promotion/sign/list/:adminToken/:promotionId"
     }
 }

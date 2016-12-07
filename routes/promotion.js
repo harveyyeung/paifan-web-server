@@ -92,7 +92,16 @@ router.get('/list/:userId/:type/:status/:token', function (req, res, next) {
         if (!user || req.params.token !== user.telMask) {
             throw new Error('您尚未登录或者登录已经失效。请重新登录。');
         }
-        return merchantServiceInterface.requestPromotions(req.params.userId, req.params.type, req.params.status).then(promotions => {
+        return merchantServiceInterface.requestPromotions(req.params.userId, req.params.type, req.params.status).then(result => {
+            var promotions = result.promotions;
+            var total = 0;
+            var counts = {};
+            if (result.counts) result.counts.forEach(c => { 
+                total += c.count
+                counts[c.status] = c.count;
+            });
+            counts['all'] = total;
+
             return res.render('list/my_promotion.ejs', {
                 user,
                 rawParameters: {
@@ -101,7 +110,8 @@ router.get('/list/:userId/:type/:status/:token', function (req, res, next) {
                     status: req.params.status,
                     baseUrl: config['extranet-server-url'][current_env]
                 },
-                promotions: promotions
+                promotions: promotions,
+                counts: counts
             });
         });
     }).catch(err => {
@@ -117,8 +127,10 @@ router.get('/available/:userId/:token/:type/:hotOrNew/:page', function (req, res
         if (!((req.params.type === 'm' && user.userType === 3) || (req.params.type === 's' && user.userType === 2))) {
             throw new Error('您所在的用户组无法执行此操作。');
         }
-        return merchantServiceInterface.requestAvailablePromotionList(req.params.type, req.params.hotOrNew, req.params.page).then(promotions => {
+        return merchantServiceInterface.requestAvailablePromotionList(req.params.type, req.params.hotOrNew, req.params.page).then(result => {
+            var promotions = result.promotions, count = result.count;
             return res.render('list/available_promotion.ejs', {
+                count,
                 promotions,
                 user,
                 rawParameters: {

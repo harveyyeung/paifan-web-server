@@ -29,8 +29,8 @@
 
         <div class="container start">
             <ul class="filter">
-                <li id="f-new" onclick="filterPromotions('new');"><%= rawParameters.type === 'm' ? '最新推广需求' : '最新推广服务' %></li>
-                <li id="f-hot" onclick="filterPromotions('hot');"><%= rawParameters.type === 'm' ? '最热推广需求' : '最热推广服务' %></li>
+                <li id="f-new" onclick="filterPromotions('new');"><%= rawParameters.type === 'm' ? '最新推广需求' : '最新推广服务' %><br/>(<%= count %>)</li>
+                <li id="f-hot" onclick="filterPromotions('hot');"><%= rawParameters.type === 'm' ? '最热推广需求' : '最热推广服务' %><br/>(<%= count %>)</li>
             </ul>
         </div>
 

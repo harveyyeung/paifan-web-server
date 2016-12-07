@@ -174,6 +174,19 @@ exports.postPromotionSign = function (promotionId, data) {
     });
 };
 
+exports.requestPromotionSignList = function (adminToken, promotionId) {
+    var url = urls['getPromotionSignList'].replace(':adminToken', adminToken)
+                                          .replace(':promotionId', promotionId);
+
+    return request.getAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout
+    }).spread((res, body) => {
+        return parseResponseMessage(body);
+    });
+};
+
 exports.requestPromotionInformation = function (promotionId) {
     var url = urls['getPromotion'].replace(':promotionId', promotionId);
 
@@ -209,8 +222,8 @@ exports.requestPromotions = function (userId, type, status) {
         timeout: timeout,
     }).spread((res, body) => {
         var obj = parseResponseMessage(body);
-        if (obj == null) return [];
-        obj.forEach(p => { p.statusString = translatePromotionStatusString(p.status)});
+        if (obj == null|| obj.promotions == null) return {promotions: [], counts: []};
+        obj.promotions.forEach(p => { p.statusString = translatePromotionStatusString(p.status)});
         return obj;
     });                    
 };
