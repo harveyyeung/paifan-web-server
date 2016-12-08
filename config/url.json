@@ -25,5 +25,8 @@
         "postPromotionSign": "/promotion/sign/:promotionId",
         "getAvailablePromotionList": "/promotion/available/:type/:hotOrNew/:page",
         "getPromotionSignList": "/promotion/sign/list/:adminToken/:promotionId"
+    },
+    "shabi-service-interface": {
+        "uploadImageToQiNiu": "/qiniu/upload/image"
     }
 }

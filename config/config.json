@@ -1,13 +1,14 @@
 {
     "product-configuration": {
         "httpTimeout": 35000,
-        "qiniuBucket": "managelist"
+        "qiniuBucket": "paifan-bucket01"
     },
     "service-connection": {
         "development": {
             "article-service": "http://127.0.0.1:4001/",
             "user-service": "http://127.0.0.1:4002/",
-            "merchant-service": "http://127.0.0.1:4003/"
+            "merchant-service": "http://127.0.0.1:4003/",
+            "shabi-service-interface": "http://127.0.0.1:4101/"
         },
         "production": {
 
@@ -17,7 +18,8 @@
         "development": {
             "article-service": "http://127.0.0.1:4001/",
             "user-service": "http://127.0.0.1:4002/",
-            "merchant-service": "http://127.0.0.1:4003/"
+            "merchant-service": "http://127.0.0.1:4003/",
+            "shabi-service-interface": "http://127.0.0.1:4101/"
         },
         "production": {
 
@@ -33,8 +35,8 @@
     },
     "keys": {
         "qiniu": {
-            "access-key": "",
-            "secret-key": ""
+            "access-key": "taBJBljzzGm3-hL5Ae_2kr4Yo2UGYlpgJzZ-voNz",
+            "secret-key": "7Y0p6j03-d4vLrdMzFei3HuJItHLhkMFwtmKkJ4m"
         }
     }
 }

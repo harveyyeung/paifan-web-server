@@ -17,7 +17,6 @@
     "bluebird": "latest",
     "request": "latest",
     "log4js": "latest",
-    "qiniu": "latest",
     "node-uuid": "latest",
     "string-builder": "latest",
     "iconv-lite": "latest",
