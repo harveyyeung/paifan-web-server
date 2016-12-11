@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var merchantServiceInterface = require('../interfaces/merchant_service_interface');
 var userServiceInterface = require('../interfaces/user_service_interface');
+var shabiServiceInterface = require('../interfaces/shabi_service_interface')
+var util = require('../common/util');
 var Q = require('q');
 var config = require('../config/config.json');
 var current_env = process.env.NODE_ENV || "development";
@@ -146,6 +148,37 @@ router.get('/available/:userId/:token/:type/:hotOrNew/:page', function (req, res
     });
 });
 
+router.post('/image/upload/:userId/:token', function (req, res, next) {
+    if (!req.body || !req.body.image) {
+        return res.send({
+            type: 'Error',
+            message: 'Image must be in the property: image.'
+        });
+    }
+
+    var imageUri = req.body.image;
+
+    if (!imageUri || !util.isBase64Uri(imageUri)) {
+        return res.send({
+            type: 'Error',
+            message: 'Image must be a base64 format!'
+        });
+    }
+    
+    var prefix = "prom_" + req.params.userId + "_"; 
+    return shabiServiceInterface.uploadImageToQiniu(prefix, imageUri).then(result => {
+        var url = config['product-configuration']['qiniuImageBaseUrl'] + result.fileName;
+        return res.send({
+            imageUri: url
+        });
+    }).catch(err => {
+        return res.send({
+            type: 'Error',
+            message: err.message
+        });
+    });
+});
+
 /**
  * Below are the bridges connect to Merchant Service.
  */
@@ -179,11 +212,26 @@ router.post('/add/:type/:userId/:token', function(req, res, next) {
     return userServiceInterface.requestUserInformation(req.params.userId).then(user => {
         if (!user || user.telMask !== req.params.token)
             throw new Error('您尚未登录或者登录已经失效。请重新登录。');
-
-        return merchantServiceInterface.postNewPromotion(req.params.type, req.params.userId, req.body).then(result => {
-            return res.send(result);
-        });
         
+        var folder = decodeURIComponent(req.body.folder);
+
+        // TODO: make this waterfall to save multiple images to the server.
+        if (util.isBase64Uri(folder)) {
+            var prefix = "prom_" + req.params.userId + "_"; 
+            // Save the image to image server.
+            return shabiServiceInterface.uploadImageToQiniu(prefix, folder).then(result => {
+                req.body.folder = encodeURIComponent(config['product-configuration']['qiniuImageBaseUrl'] + result.fileName);
+                req.body.folderPreview = req.body.folder;
+                return merchantServiceInterface.postNewPromotion(req.params.type, req.params.userId, req.body).then(result => {
+                    return res.send(result);
+                });
+            });
+        } else {
+            // The folder is already saved in image server.
+            return merchantServiceInterface.postNewPromotion(req.params.type, req.params.userId, req.body).then(result => {
+                return res.send(result);
+            });
+        }
     }).catch(err => {
         res.status(500);
         return res.send({

@@ -10,6 +10,17 @@
         <script src="/scripts/jquery-3.1.0.min.js"></script>
         <script type="text/javascript" src="/scripts/jqueryui/jquery-ui.min.js"></script>
         <script src="/scripts/qrcode.min.js"></script>
+        <style>
+            div.publish {
+                padding: 10px 20px;
+                margin: 40px;
+            }
+            div.message {
+                text-align: center;
+                margin: 50px 0 0 0;
+                height: 400px;
+            }
+        </style>
         <script>
             baseUrl = '<%= rawParameters.baseUrl %>'
             myShareQrCode = null;
@@ -61,13 +72,15 @@
         </div>
 
         <div class="container start">
+        <% if (promotions.length > 0 || rawParameters.status != 'all') { %>
             <ul class="filter">
                 <li id="f-all" onclick="filterPromotions('all');"><%= rawParameters.type == 'm' ? '全部需求': '全部服务' %><br/>(<%= counts['all'] %>)</li>
-                <li id="f-s" onclick="filterPromotions('s');">未发布<br/>(<%= counts['s'] === void 0 ? 0 : counts['s'] %>)</li>
+                <li id="f-s" onclick="filterPromotions('s');">未发布<br/>(<%= counts['s'] === void 0 ? 0 : counts['e'] %>)</li>
                 <li id="f-p" onclick="filterPromotions('p');">待审核<br/>(<%= counts['p'] === void 0 ? 0 : counts['p'] %>)</li>
                 <li id="f-a" onclick="filterPromotions('a');">审核通过<br/>(<%= counts['a'] === void 0 ? 0 : counts['a'] %>)</li>
                 <li id="f-x" onclick="filterPromotions('x');">被下架<br/>(<%= counts['x'] === void 0 ? 0 : counts['x'] %>)</li>
             </ul>
+        <% } %>
         </div>
 
         <div class="container">
@@ -87,7 +100,21 @@
             <% }); %>
             <% if (!promotions || promotions.length == 0) { %>
                 <br/>
-                没有找到相关的推广信息。
+                <% if (rawParameters.status == 'all') { %>
+                    <div class="message">
+                        <%= user.userType == 2 ? '您还未发布任何推广需求哦，赶快想想您的需求吧！': '您还未发布任何推广服务哦，开动您的脑洞去策划吧！' %>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <div class="button-red-big publish"
+                             onclick="window.open('http://paifan.me/wx/promotion/publish/<%= user.userType == 2 ? 'm' : 's' %>/<%= user.id %>/<%= user.telMask %>')">
+                            <%= user.userType == 2 ? '去发布需求' : '去发布服务' %>
+                        </div>
+                    </div>  
+                <% } else { %>
+                没有处于该状态的推广<%= user.userType == 2 ? '需求' : '服务' %>。
+                <% } %>
+                
             <% } %>
         </div>
 

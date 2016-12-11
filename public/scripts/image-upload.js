@@ -16,8 +16,8 @@ function setImageLoaderWidth(minWidth, targetWidth) {
 
     canvas.width = TARGET_WIDTH;
     canvas.height = TARGET_WIDTH;
-    canvas.style.width = TARGET_WIDTH;
-    canvas.style.height = TARGET_WIDTH;
+    canvas.style.width = 240 + 'px';
+    canvas.style.height = 240 + 'px';
 
     $('#upload-file').val('');
     originalDataUrl = null;
@@ -129,7 +129,7 @@ function getImageLoaderImage() {
         return null;
     }
 
-    var result = canvas.toDataURL('image/jpeg', 0.55);
+    var result = canvas.toDataURL('image/jpeg', 0.8);
     //alert(result.length);
     return result;
 }

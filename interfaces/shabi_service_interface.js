@@ -3,8 +3,8 @@ var request = bluebird.promisifyAll(require('request'), {multiArgs: true}); // S
 var current_env = process.env.NODE_ENV || "development";
 var config = require('../config/config.json');
 var timeout = config['product-configuration']['httpTimeout'];
-var baseUrl = config['service-connection'][current_env]['merchant-service'];
-var urls = require('../config/url.json')['merchant-service'];
+var baseUrl = config['service-connection'][current_env]['shabi-service-interface'];
+var urls = require('../config/url.json')['shabi-service-interface'];
 
 var parseResponseMessage = function (body) {
     var obj = JSON.parse(body);
@@ -16,6 +16,18 @@ var parseResponseMessage = function (body) {
     return obj;
 };
 
-exports.uploadImageToQiniu = function (imageBase64) {
-    
+exports.uploadImageToQiniu = function (prefix, imageBase64) {
+    var url = urls['uploadImageToQiNiu'];
+
+    return request.postAsync({
+        url: url,
+        baseUrl: baseUrl,
+        timeout: timeout,
+        form: {
+            image: encodeURIComponent(imageBase64),
+            prefix: encodeURIComponent(prefix)
+        },
+    }).spread((res, body) => {
+        return parseResponseMessage(body);
+    });
 };

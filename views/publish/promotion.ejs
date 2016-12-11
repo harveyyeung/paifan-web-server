@@ -9,15 +9,16 @@
         <link rel="Shortcut Icon" href="/favicon.png">
         <meta charset="utf-8">
         <script src="/scripts/jquery-3.1.0.min.js"></script>
-        <script type="text/javascript" src="/plugins/tinymce/tinymce.min.js"></script>
         <script type="text/javascript" src="/scripts/jqueryui/jquery-ui.min.js"></script>
         <script type="text/javascript" src="/scripts/image-upload.js"></script>
         <script type="text/javascript" src="/scripts/jqueryui/plugins/datetime/jquery.datetimepicker.full.min.js"></script>
+        <script type="text/javascript" src="/plugins/tinymce/tinymce.min.js"></script>
         <script>
             baseUrl = '<%= rawParameters.baseUrl %>';
             editingPromotionId = <%= promotionId %>;
 
             tinymce.init({
+                init_instance_callback: onTinyMceInitialized,
                 selector: 'textarea#textarea-content',
                 toolbar: "forecolor backcolor | bold italic underline strikethrough | cut copy paste | image",
                 plugins: "image imagetools textcolor",
@@ -28,7 +29,54 @@
                     format: {title: '格式', items: 'forecolor backcolor | bold italic underline strikethrough superscript subscript | removeformat'},
                 },
                 height: 300,
-                width: 650
+                width: 650,
+				file_picker_callback: function(callback, value, meta) {
+                    if (meta.filetype == 'image') {
+                        $('#upload').trigger('click');
+                        $('#upload').off().on('change', function() {
+                        var file = this.files[0];
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            if (e.target.result.length > 1024 * 1024 * 2) {
+                                alert('图片的大小不能超过 1.5MB。\n请调整图片尺寸后再次尝试上传（建议宽度小于 640 像素，显示效果更佳）。');
+                                return;
+                            }
+                            $('#loading-div').dialog({
+                                modal: true,
+                                height: 150,
+                                width: 350
+                            }).dialog('open');
+
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: baseUrl + "promotion/image/upload/<%= rawParameters.userId %>/<%= user.telMask %>",
+                                data: {
+                                    image: e.target.result
+                                },
+                                async: true,
+                                success: function (obj) {
+                                    $('#loading-div').dialog('close');
+                                    if (obj.type && obj.type == 'Error') {
+                                        alert('上传图片失败，请检查网络连接，然后再试一次。' + obj.message);
+                                        return;
+                                    }
+                                    callback(obj.imageUri, {alt: ''});
+                                },
+                                error: function (obj) {
+                                    $('#loading-div').dialog('close');
+                                    if (obj.responseText)
+                                        alert('上传图片失败，请检查网络连接，然后再试一次。' + JSON.parse(obj.responseText).message);
+                                    else
+                                        alert('上传图片失败，请检查网络连接，然后再试一次。');
+                                }
+                            });
+                            
+                        };
+                        reader.readAsDataURL(file);
+                        });
+                    }
+                }
             });
 
             function submitForm(isPreview) {
@@ -117,43 +165,49 @@
             function checkFields() {
                 var result = true;
 
-                var simpleAlertFields = ['name', 'title', 'promotionChannel'];
+                var simpleAlertFields = ['name', 'title', 'promotionChannel', 'startTime', 'endTime', 'deadline'];
 
                 for (var i = 0; i < simpleAlertFields.length; i++) {
                     var control = $('input[name=' + simpleAlertFields[i] + ']');
                     var text = control.val();
                     if (!text || text.trim() == "") {
                         result = false;
-                        control.attr('placeholder', '此字段为必填项。');
+                        control.attr('placeholder', '此项为必填项。');
                         control.addClass('error');
                     }
                 }
 
-                var deadlineControl = $('input[name=deadline]');
-                var deadline = tryParseDate(deadlineControl.val());
-                if (!deadline) {
-                    toggleInputError(deadlineControl, false);
-                    result = false;
-                } else {
-                    toggleInputError(deadlineControl, true);
-                }
-
                 var startTimeControl = $('input[name=startTime]');
-                var startTime = tryParseDate(startTimeControl.val());
-                if (!startTime) {
-                    toggleInputError(startTimeControl, false);
-                    result = false;
-                } else {
-                    toggleInputError(startTimeControl, true);
+                if (startTimeControl.val() != '') {
+                    var startTime = tryParseDate(startTimeControl.val());
+                    if (!startTime) {
+                        toggleInputError(startTimeControl, false);
+                        result = false;
+                    } else {
+                        toggleInputError(startTimeControl, true);
+                    }
                 }
 
                 var endTimeControl = $('input[name=endTime]');
-                var endTime = tryParseDate(endTimeControl.val());
-                if (!endTime || endTime <= startTime) {
-                    toggleInputError(endTimeControl, false);
-                    result = false;
-                } else {
-                    toggleInputError(endTimeControl, true);
+                if (endTimeControl.val() != '') {
+                    var endTime = tryParseDate(endTimeControl.val());
+                    if (!endTime || endTime <= startTime) {
+                        toggleInputError(endTimeControl, false);
+                        result = false;
+                    } else {
+                        toggleInputError(endTimeControl, true);
+                    }
+                }
+
+                var deadlineControl = $('input[name=deadline]');
+                if (deadlineControl.val() != '') {
+                    var deadline = tryParseDate(deadlineControl.val());
+                    if (deadline < new Date() || deadline >= startTime) {
+                        toggleInputError(deadlineControl, false);
+                        result = false;
+                    } else {
+                        toggleInputError(deadlineControl, true);
+                    }   
                 }
 
                 var headcountControl = $('input[name=headcount]');
@@ -175,11 +229,11 @@
                 }
 
                 var folder = $('#img-folder').attr('src');
-                if (!folder || folder.length < 4 || folder.substring(0, 4) != "data") {
-                    toggleInputError($('#img-folder'), false);
+                if ((!editingPromotionId > 0) && (!folder || folder.length < 4 || folder.substring(0, 4) != "data")) {
+                    toggleInputError($('#img-folder'), false, "#error-folder");
                     result = false;
                 } else {
-                    toggleInputError($('#img-folder'), true);
+                    toggleInputError($('#img-folder'), true, "#error-folder");
                 }
 
                 return result;
@@ -189,14 +243,15 @@
              * This method will find the input's coresponding error span item and make it visible/invisible.
              * The error span item's name must be error-{name of the associate input}.
              * */
-            function toggleInputError(jControl, valid) {
+            function toggleInputError(jControl, valid, selector) {
                 if (valid) {
                     jControl.removeClass('error');
                     $('#error-' + jControl.attr('name')).hide();
                 } else {
                     jControl.addClass('error');
-                    $('#error-' + jControl.attr('name')).hide();
-                    $('#error-' + jControl.attr('name')).show(250);
+                    if (!selector) selector = '#error-' + jControl.attr('name');
+                    $(selector).hide();
+                    $(selector).show(250);
                 }
             }
 
@@ -231,8 +286,8 @@
 
                 dialog = $('#image-select-form').dialog({
                     autoOpen: false,
-                    height: targetWidth + 270,
-                    width: Math.max(500, targetWidth + 150),
+                    height: 500,
+                    width: 500,
                     modal: true,
                     buttons: {
                         "上传": function() {
@@ -326,10 +381,8 @@
                 }
             }
 
-            $(document).ready(function() {
-                $.datetimepicker.setLocale('ch');
-                $('#deadline,#startTime,#endTime').datetimepicker({value: new Date()});
-                if (editingPromotionId > 0) {
+            function onTinyMceInitialized() {
+               if (editingPromotionId > 0) {
                     $('#loading-div').dialog({
                         modal: true,
                         height: 150,
@@ -377,6 +430,12 @@
                         }
                     });
                 }
+            }
+
+            $(document).ready(function() {
+                $.datetimepicker.setLocale('ch');
+                $('#deadline,#startTime,#endTime').datetimepicker(); //{value: new Date()}
+ 
                 initImageLoader();
                 $('input').blur(function () {
                     var text = $(this).val();
@@ -393,6 +452,8 @@
         <% include ../common/image_upload %>
 
         <% include ../common/top_bar %>
+
+         <input name="image" type="file" id="upload" class="display:none;" onchange="">
 
         <div id="loading-div" title="请稍候" style="display:none">
             <p> 正在向服务器请求数据，请稍等。 </p>
@@ -419,7 +480,7 @@
                 <tr>
                     <td class="post-table-black-label" colspan="3">
                         <%= rawParameters.type == 'm' ? '推广需求方' : '推广服务商' %>
-                        <span class="post-description">（让大家认识下你或者认识下品牌）</span>
+                        <span class="post-description">（<%= rawParameters.type == 'm' ? '让大家认识下品牌' : '让广告主认识下你' %>）</span>
                     </td>
                 </tr>
                 <tr>
@@ -432,7 +493,7 @@
                         <input type="text" id="post-name-input" name="name" class="post-small" maxlength="50">
                     </td>
                     <td rowspan="2">
-                        <textarea name="selfDescription" id="post-selfdesc-input" cols="30" rows="10" class="post-multi" placeholder="介绍下自己活介绍下品牌（不超过 500 字）" maxlength="500"></textarea>
+                        <textarea name="selfDescription" id="post-selfdesc-input" cols="30" rows="10" class="post-multi" placeholder="介绍下<%= rawParameters.type == 'm' ? '品牌' : '自己' %>（不超过 500 字）" maxlength="500"></textarea>
                     </td>
                 </tr>
                 <tr>
@@ -440,24 +501,44 @@
                     <td>
                         <select name="role" id="post-job-input" class="post-small">
                             <option value="">-- 请选择 --</option>
-                            <option value="品牌">品牌</option>
-                            <option value="时尚博主">时尚博主</option>
-                            <option value="搭配师">搭配师</option>
-                            <option value="时尚达人">时尚达人</option>
-                            <option value="买手">买手</option>
-                            <option value="形象设计师">形象设计师</option>
-                            <option value="集成店">集成店</option>
-                            <option value="陪购师">陪购师</option>
-                            <option value="衣橱整理师">衣橱整理师</option>
-                            <option value="自营店">自营店</option>
-                            <option value="体验店">体验店</option>
-                            <option value="摄影师">摄影师</option>
-                            <option value="买手店">买手店</option>
+                            <% if (rawParameters.type == 'm') { %>
+                                <option value="设计师品牌">设计师品牌</option>
+                                <option value="轻奢品牌">轻奢品牌</option>
+                                <option value="奢侈品牌">奢侈品牌</option>
+                                <option value="潮牌">潮牌</option>
+                                <option value="定制品牌">定制品牌</option>
+                                <option value="淘品牌">淘品牌</option>
+                                <option value="快时尚品牌">快时尚品牌</option>
+                                <option value="精品品牌">精品品牌</option>
+                                <option value="卖场品牌">卖场品牌</option>
+                                <option value="买手品牌">买手品牌</option>
+                                <option value="集成店">集成店</option>
+                                <option value="买手店">买手店</option>
+                                <option value="体验店">体验店</option>
+                                <option value="电商品牌">电商品牌</option>
+                                <option value="时尚组织">时尚组织</option>
+                            <% } else { %>
+                                <option value="时尚博主">时尚博主</option>
+                                <option value="时尚编辑">时尚编辑</option>
+                                <option value="设计师">设计师</option>
+                                <option value="搭配师">搭配师</option>
+                                <option value="时尚达人">时尚达人</option>
+                                <option value="买手">买手</option>
+                                <option value="形象设计师">形象设计师</option>
+                                <option value="模特">模特</option>
+                                <option value="明星">明星</option>
+                                <option value="主播">主播</option>
+                                <option value="视频团队">视频团队</option>
+                                <option value="陪购师">陪购师</option>
+                                <option value="衣橱整理师">衣橱整理师</option>
+                                <option value="摄影师">摄影师</option>
+                            <% } %>
+
                         </select>
                     </td>
                 </tr>
                 <tr>
-                    <td class="post-table-gray-label">设置个人或品牌头像</td>
+                    <td class="post-table-gray-label"><%= rawParameters.type == 'm' ? '设置品牌头像' : '设置头像' %></td>
                 </tr>
             </table>
         </div>
@@ -471,7 +552,7 @@
 
                 <tr>
                     <td id="suit_cover">
-                        <img src="http://paifan.me/index/images/post/upload_cover.png" id="img-folder" onclick="uploadImage(480, this, true);" class="img-button" style="width:320px;height:320px">
+                        <img src="http://paifan.me/index/images/post/upload_cover.png" id="img-folder" onclick="uploadImage(640, this, true);" class="img-button" style="width:200px;height:200px">
                         <img width="234px" height="234px" id="folder-preview" style="display:none;">
                         <span class="must-label" id="error-folder" style="display:none;">&nbsp;&nbsp;请上传推广封面。</span>
                     </td>
@@ -490,7 +571,7 @@
                 </tr>
                 <tr>
                     <td class="post-table-black-label">报名截止时间 <span class="must-label">&nbsp;*&nbsp;</span></td>
-                    <td><input type="text" id="deadline" name="deadline" class="post-small"><span id="error-deadline" class="must-label" style="display:none;">&nbsp;&nbsp;报名截止时间输入无效。</span></td>
+                    <td><input type="text" id="deadline" name="deadline" class="post-small"><span id="error-deadline" class="must-label" style="display:none;">&nbsp;&nbsp;报名截止时间必须大于当前时间并小于推广开始时间。</span></td>
                 </tr>
                 <tr>
                     <td class="post-table-black-label">推广开始时间 <span class="must-label">&nbsp;*&nbsp;</span></td>
@@ -498,7 +579,7 @@
                 </tr>
                 <tr>
                     <td class="post-table-black-label">推广结束时间 <span class="must-label">&nbsp;*&nbsp;</span></td>
-                    <td><input type="text" id="endTime" name="endTime" class="post-small"><span id="error-endTime" class="must-label" style="display:none;">&nbsp;&nbsp;结束时间输入无效。</span></td>
+                    <td><input type="text" id="endTime" name="endTime" class="post-small"><span id="error-endTime" class="must-label" style="display:none;">&nbsp;&nbsp;推广结束时间必须大于推广开始时间。</span></td>
                 </tr>
                 <tr>
                     <td class="post-table-black-label"><%= rawParameters.type =='m' ? '期望推广渠道': '推广宣传渠道' %> <span class="must-label">&nbsp;*&nbsp;</span></td>
@@ -506,11 +587,11 @@
                 </tr>
                 <tr>
                     <td class="post-table-black-label">参加名额限制 <span class="must-label">&nbsp;*&nbsp;</span></td>
-                    <td><input min="0" max="99999999" type="number" name="headcount" class="post-small"><span id="error-headcount" class="must-label" style="display:none;">&nbsp;&nbsp;所输入的名额无效。您只能输入一个正整数。</span></td>
+                    <td><input min="0" max="99999999" type="number" name="headcount" class="post-small" placeholder="0 为不限"><span id="error-headcount" class="must-label" style="display:none;">&nbsp;&nbsp;所输入的名额无效。您只能输入一个正整数。</span></td>
                 </tr>
                 <tr>
                     <td class="post-table-black-label"><%= rawParameters.type =='m' ? '推广预算': '推广报价' %> <span class="must-label">&nbsp;*&nbsp;</span></td>
-                    <td><input name="budget" type="number" min="0" max="999999999" step="1000" class="post-small">&nbsp;&nbsp;元<span  id="error-budget"class="must-label" style="display:none;">&nbsp;&nbsp;推广预算无效。您只能输入一个非负数。</span></td>
+                    <td><input name="budget" type="number" min="0" max="999999999" step="1000" class="post-small">&nbsp;&nbsp;元<span  id="error-budget"class="must-label" style="display:none;">&nbsp;&nbsp;您只能输入一个非负数。</span></td>
                 </tr>
                 <tr>
                     <td class="post-table-black-label"><%= rawParameters.type =='m' ? '推广需求详情': '推广服务详情' %> <span class="must-label">&nbsp;*&nbsp;</span></td>

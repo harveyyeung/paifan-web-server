@@ -1,7 +1,7 @@
 {
     "product-configuration": {
         "httpTimeout": 35000,
-        "qiniuBucket": "paifan-bucket01"
+        "qiniuImageBaseUrl": "http://image.paifan.me/"
     },
     "service-connection": {
         "development": {
@@ -32,11 +32,5 @@
     "extranet-server-url": {
         "development": "http://127.0.0.1:3000/",
         "production": ""
-    },
-    "keys": {
-        "qiniu": {
-            "access-key": "taBJBljzzGm3-hL5Ae_2kr4Yo2UGYlpgJzZ-voNz",
-            "secret-key": "7Y0p6j03-d4vLrdMzFei3HuJItHLhkMFwtmKkJ4m"
-        }
     }
 }

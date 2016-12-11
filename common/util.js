@@ -17,3 +17,13 @@ exports.getTimeSpan = function (createTime) {
 
     return timeSpan;
 };
+
+exports.isBase64Uri = function (imageUri) {
+    if (imageUri.startsWith('http', 0))
+        return false;
+    
+    if (imageUri.indexOf(';base64,') > 0)
+        return true;
+
+    return false;
+};
