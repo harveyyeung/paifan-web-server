@@ -50,8 +50,8 @@
                 var dialog = $('#share-form').dialog({
                     title: decodeURIComponent(titleEncoded),
                     autoOpen: false,
-                    height: 320,
-                    width: 290,
+                    height: 330,
+                    width: 300,
                     modal: true
                 });
 
@@ -74,7 +74,7 @@
         <div class="container start">
         <% if (promotions.length > 0 || rawParameters.status != 'all') { %>
             <ul class="filter">
-                <li id="f-all" onclick="filterPromotions('all');"><%= rawParameters.type == 'm' ? '全部需求': '全部服务' %><br/>(<%= counts['all'] %>)</li>
+                <li id="f-all" onclick="filterPromotions('all');"><%= user.userType == '2' ? '全部需求': '全部服务' %><br/>(<%= counts['all'] %>)</li>
                 <li id="f-s" onclick="filterPromotions('s');">未发布<br/>(<%= counts['s'] === void 0 ? 0 : counts['e'] %>)</li>
                 <li id="f-p" onclick="filterPromotions('p');">待审核<br/>(<%= counts['p'] === void 0 ? 0 : counts['p'] %>)</li>
                 <li id="f-a" onclick="filterPromotions('a');">审核通过<br/>(<%= counts['a'] === void 0 ? 0 : counts['a'] %>)</li>

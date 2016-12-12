@@ -132,7 +132,7 @@
                 <% if (promotion.status == 'a') { %>
                 <%   if (new Date(promotion.deadline) < new Date()) { %>
                     &nbsp;&nbsp;&nbsp;&nbsp;<div class="button-white">已截止</div>
-                <% } else if (promotion.headcount <= promotion.signedCount) { %>
+                <% } else if (promotion.headcount > 0 && promotion.headcount <= promotion.signedCount) { %>
                     &nbsp;&nbsp;&nbsp;&nbsp;<div class="button-white">名额已满</div>
                 <% } else { %>
                     &nbsp;&nbsp;&nbsp;&nbsp;<div id="sign-button" class="button-red" onclick="openSignForm();">立即报名</div>
@@ -158,6 +158,13 @@
                 <%= promotion.budget %> 元
             </div>
 
+            <div class="paragraph">
+                <span class="highlight">
+                    名额限制：
+                </span>
+                <%= promotion.headcount <= 0 ? '不限' : promotion.headcount + ' 人' %>
+            </div>
+
             <div class="paragraph" id="content">
                 加载推广详情中……
             </div>
@@ -166,7 +173,7 @@
                 <% if (promotion.status == 'a') { %>
                 <%   if (new Date(promotion.deadline) < new Date()) { %>
                     &nbsp;&nbsp;&nbsp;&nbsp;<div class="button-white-big">已截止</div>
-                <% } else if (promotion.headcount <= promotion.signedCount) { %>
+                <% } else if (promotion.headcount > 0 && promotion.headcount <= promotion.signedCount) { %>
                     &nbsp;&nbsp;&nbsp;&nbsp;<div class="button-white-big">名额已满</div>
                 <% } else { %>
                     &nbsp;&nbsp;&nbsp;&nbsp;<div id="sign-button-big" class="button-red-big" onclick="openSignForm();">立即报名</div>
@@ -176,7 +183,6 @@
 
         <div class="mobile-detail-author-bar">
             <h4 class="inline"> <%= promotion.type == 'm' ? '时尚广告主' : '营销服务商' %> </h4>
-            （版权所有，未经允许禁止转载）
         </div>
 
         <table class="no-border author">

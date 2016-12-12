@@ -264,10 +264,25 @@ router.post('/update/:promotionId/:userId/:token', function (req, res, next) {
         }
 
         req.body.userId = promotion.userId;
+        var folder = decodeURIComponent(req.body.folder);
 
-        return merchantServiceInterface.postUpdatePromotion(req.params.promotionId, req.body).then(result => {
-            return res.send(result);
-        });
+        // TODO: make this waterfall to save multiple images to the server.
+        if (util.isBase64Uri(folder)) {
+            var prefix = "prom_" + req.params.userId + "_"; 
+            // Save the image to image server.
+            return shabiServiceInterface.uploadImageToQiniu(prefix, folder).then(result => {
+                req.body.folder = encodeURIComponent(config['product-configuration']['qiniuImageBaseUrl'] + result.fileName);
+                req.body.folderPreview = req.body.folder;
+                return merchantServiceInterface.postUpdatePromotion(req.params.promotionId, req.body).then(result => {
+                    return res.send(result);
+                });
+            });
+        } else {
+            return merchantServiceInterface.postUpdatePromotion(req.params.promotionId, req.body).then(result => {
+                return res.send(result);
+            });
+        }
+
     }).catch(err => {
         res.status(500);
         return res.send({

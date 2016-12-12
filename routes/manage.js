@@ -232,7 +232,7 @@ router.get('/audit/media/:userId/:auditStatus/:rejectedReason', function (req, r
 
 router.get('/audit/promotion/:adminToken/:promotionId/:auditStatus/:rejectedReason', function (req, res, next) {
     return merchantServiceInterface.requestAuditPromotion(req.params.adminToken, req.params.promotionId, req.params.auditStatus,
-            encodeURIComponent(req.params.rejectedReason)).then(message => {
+            req.params.rejectedReason).then(message => {
         return res.send(message);
     }).catch(err => {
         return next(err);

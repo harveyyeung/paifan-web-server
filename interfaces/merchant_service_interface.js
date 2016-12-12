@@ -29,7 +29,7 @@ var translateStatusString = function (status) {
 
 var translatePromotionStatusString = function (status) {
     if (!status || status == 'e') {
-        return '待提交';
+        return '未发布';
     } else if (status == 'p') {
         return '待审核';
     } else if (status == 'r') {
@@ -123,7 +123,7 @@ exports.requestAuditMerchant = function (userId, auditStatus, rejectedReason) {
 exports.requestAuditMedia = function (userId, auditStatus, rejectedReason) {
     var url = urls['auditMediaInfo'].replace(':userId', userId)
                                     .replace(':auditStatus', auditStatus)
-                                    .replace(':rejectedReason', rejectedReason);
+                                    .replace(':rejectedReason', encodeURIComponent(rejectedReason));
 
     return request.getAsync({
         url: url,
@@ -271,7 +271,7 @@ exports.requestAuditPromotion = function (adminToken, promotionId, auditStatus, 
     var url = urls['auditPromotion'].replace(':adminToken', adminToken)
                                     .replace(':promotionId', promotionId)
                                     .replace(':auditStatus', auditStatus)
-                                    .replace(':rejectedReason', rejectedReason);
+                                    .replace(':rejectedReason', encodeURIComponent(rejectedReason));
     
     return request.getAsync({
         url: url,

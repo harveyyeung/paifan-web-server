@@ -80,7 +80,11 @@
             });
 
             function submitForm(isPreview) {
-                if (!checkFields()) return;
+                $('#submit-error-div').hide();
+                if (!checkFields()) {
+                    $('#submit-error-div').show(500);
+                    return;
+                };
 
                 var data = $('#promotion-form').serializeArray();
 
@@ -103,42 +107,60 @@
 
                 if (editingPromotionId > 0) 
                     data.push({name: 'id', value: editingPromotionId});
+                
+                var avatarSrc = $('#post-update-avatar-img').attr('src');
+                if (avatarSrc.indexOf('upload_avatar.png') >= 0) {
+                    // Haven't uploaded the avatar, use default instead.
+                    avatarSrc = 'http://image.paifan.me/d9b4f07a-dd1c-4d63-8dfa-8cc151f7d9d5.jpg';
+                }
 
                 data.push({name: 'status', value: isPreview ? 'e': 'p'});
-                data.push({name: 'avatar', value: encodeURIComponent($('#post-update-avatar-img').attr('src'))});
+                data.push({name: 'avatar', value: encodeURIComponent(avatarSrc)});
                 data.push({name: 'folder', value: encodeURIComponent($('#img-folder').attr('src'))});
                 data.push({name: 'content', value: content});
                 data.push({name: 'folderPreview', value: encodeURIComponent(folderPreviewURI)});
                 data.push({name: 'type', value: '<%= rawParameters.type %>'})
+                $('#loading-div').dialog({
+                    modal: true,
+                    height: 150,
+                    width: 350
+                }).dialog('open');
 
-                $.ajax({
-                    type: "POST",
-                    data: data,
-                    dataType: "json",
-                    url: getSubmitUrl(),
-                    async: true,
-                    success: function (obj) {
-                        if (obj.type && obj.type == 'Error') {
-                            alert('发布失败：' + obj.message);
-                        } else {
-                            if (!isPreview) {
-                                alert(obj.message);
-                                window.location = baseUrl + "promotion/list/<%= rawParameters.userId %>/all/all/<%= user.telMask %>";
+                try {
+                    $.ajax({
+                        type: "POST",
+                        data: data,
+                        dataType: "json",
+                        url: getSubmitUrl(),
+                        async: true,
+                        success: function (obj) {
+                            $('#loading-div').dialog('close');
+                            if (obj.type && obj.type == 'Error') {
+                                alert('发布失败：' + obj.message);
                             } else {
-                                window.open(baseUrl + "promotion/" + obj.id, "_blank");
+                                if (!isPreview) {
+                                    alert(obj.message);
+                                    window.location = baseUrl + "promotion/list/<%= rawParameters.userId %>/all/all/<%= user.telMask %>";
+                                } else {
+                                    window.open(baseUrl + "promotion/" + obj.id, "_blank");
+                                }
                             }
-                        }
-                        setSubmitButtonVisibility(true);
-                    },
-                    error: function (obj) {
-                        setSubmitButtonVisibility(true);
+                            setSubmitButtonVisibility(true);
+                        },
+                        error: function (obj) {
+                            $('#loading-div').dialog('close');
+                            setSubmitButtonVisibility(true);
 
-                        if (obj.responseText)
-                            alert('发布失败：' + JSON.parse(obj.responseText).message);
-                        else
-                            alert('发布失败，请检查您的网络连接，然后再试一次。');
-                    }
-                });
+                            if (obj.responseText)
+                                alert('发布失败：' + JSON.parse(obj.responseText).message);
+                            else
+                                alert('发布失败，请检查您的网络连接，然后再试一次。');
+                        }
+                    });
+                } catch (ex) {
+                    $('#loading-div').dialog('close');
+                    console.log(ex);
+                }
 
             }
 
@@ -212,7 +234,7 @@
 
                 var headcountControl = $('input[name=headcount]');
                 var headcount = tryParseInt(headcountControl.val());
-                if (!headcount || headcount < 1 || headcount > 999999999) {
+                if (headcount == null || headcount < 0 || headcount > 999999999) {
                     toggleInputError(headcountControl, false);
                     result = false;
                 } else {
@@ -587,7 +609,7 @@
                 </tr>
                 <tr>
                     <td class="post-table-black-label">参加名额限制 <span class="must-label">&nbsp;*&nbsp;</span></td>
-                    <td><input min="0" max="99999999" type="number" name="headcount" class="post-small" placeholder="0 为不限"><span id="error-headcount" class="must-label" style="display:none;">&nbsp;&nbsp;所输入的名额无效。您只能输入一个正整数。</span></td>
+                    <td><input min="0" max="99999999" type="number" name="headcount" class="post-small" placeholder="0 为不限"><span id="error-headcount" class="must-label" style="display:none;">&nbsp;&nbsp;所输入的名额无效。您只能输入一个非负整数。</span></td>
                 </tr>
                 <tr>
                     <td class="post-table-black-label"><%= rawParameters.type =='m' ? '推广预算': '推广报价' %> <span class="must-label">&nbsp;*&nbsp;</span></td>
@@ -601,6 +623,9 @@
             
         </div>
         <div class="post-div-container" id="post-submit-div">
+            <div id="submit-error-div" style="color:red;display:none;">
+                您提交的内容有部分项目不符合要求。请按照页面中红色部分的提示进行修改，然后再次提交。
+            </div>
             <div class="button-red-big" style="padding: 12px 50px;border-radius:8px;" onclick="submitForm();" id="submit-button">
                 <%= rawParameters.type =='m' ? '发布需求': '发布服务' %>
             </div>

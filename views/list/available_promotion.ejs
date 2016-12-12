@@ -44,7 +44,8 @@
                     <div class="summary">
                         <b>报名截止：</b><%= promotion.deadline %><br/>
                         <b>推广时间：</b><%= promotion.startTime %>~<%= promotion.endTime %><br/>
-                        <b>期望渠道：</b><%= promotion.promotionChannel %><br/>
+                        <b><%= promotion.type === 'm' ? '期望渠道：' : '推广渠道' %></b><%= promotion.promotionChannel %><br/>
+                        <b><%= promotion.type === 'm' ? '推广预算：' : '推广报价' %></b><%= promotion.budget %>&nbsp;元<br/>
                     </div>
                 </div>
             <% }) %>

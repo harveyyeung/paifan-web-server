@@ -74,7 +74,7 @@
                 
                 <select id="select-audit-status" name="auditStatus">
                     <option value="all">-- 全部状态 --</option>
-                    <option value="e">待提交</option>
+                    <option value="e">未发布</option>
                     <option value="p">待审核</option>
                     <option value="a">审核通过</option>
                     <option value="r">退回修改</option>
@@ -115,7 +115,7 @@
                         <td><%= promotion.entryTime %></td>
                         <td><%= promotion.deadline %></td>
                         <td>
-                            <%= promotion.signedCount ? promotion.signedCount : 0 %> <br/>/ <%= promotion.headcount %> <br/>
+                            <%= promotion.signedCount ? promotion.signedCount : 0 %> <br/>/ <%= promotion.headcount <= 0 ? '不限': promotion.headcount %> <br/>
                             <a href="<%= rawParameters.baseUrl + 'manage/sign/list/' + token + '/' + promotion.id %>" target="_blank">
                                 报名表
                             </a>
