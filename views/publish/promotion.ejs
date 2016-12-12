@@ -22,6 +22,7 @@
                 selector: 'textarea#textarea-content',
                 toolbar: "forecolor backcolor | bold italic underline strikethrough | cut copy paste | image",
                 plugins: "image imagetools textcolor",
+                image_advtab: true,
                 language: 'zh_CN',
                 menu: {
                     edit: {title: '编辑', items: 'undo redo | cut copy paste pastetext | selectall'},
@@ -61,7 +62,7 @@
                                         alert('上传图片失败，请检查网络连接，然后再试一次。' + obj.message);
                                         return;
                                     }
-                                    callback(obj.imageUri, {alt: ''});
+                                    callback(obj.imageUri, {alt: '图片上传失败，请再试一次。'});
                                 },
                                 error: function (obj) {
                                     $('#loading-div').dialog('close');
@@ -308,8 +309,8 @@
 
                 dialog = $('#image-select-form').dialog({
                     autoOpen: false,
-                    height: 500,
-                    width: 500,
+                    height: 450,
+                    width: 470,
                     modal: true,
                     buttons: {
                         "上传": function() {

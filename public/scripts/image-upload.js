@@ -16,8 +16,8 @@ function setImageLoaderWidth(minWidth, targetWidth) {
 
     canvas.width = TARGET_WIDTH;
     canvas.height = TARGET_WIDTH;
-    canvas.style.width = 240 + 'px';
-    canvas.style.height = 240 + 'px';
+    canvas.style.width = 200 + 'px';
+    canvas.style.height = 200 + 'px';
 
     $('#upload-file').val('');
     originalDataUrl = null;
@@ -27,7 +27,7 @@ function initImageLoader(minWidth, targetWidth) {
     MIN_WIDTH = minWidth || 640;
     TARGET_WIDTH = targetWidth || 320;
 
-	$('#upload-file').on('change',function(){
+	$('#upload-file').off().on('change',function(){
 		var reader = new FileReader();
 		reader.onload = function(e) {
 			var image = new Image();
@@ -86,7 +86,7 @@ function initImageLoader(minWidth, targetWidth) {
 		dragging = false;
 	});
 
-    $('#tempCanvas').bind('wheel mousewheel',function (e) {
+    $('#tempCanvas').on('wheel mousewheel',function (e) {
         e.preventDefault();
         
         if(e.originalEvent.wheelDelta / 120 > 0) {
