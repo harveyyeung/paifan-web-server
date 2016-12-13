@@ -4,6 +4,12 @@
     <head>
         <% include ../common/mobile_header %>
         <title><%= promotion.title %></title>
+        <style>
+            div#content img {
+                max-width: 100%;
+                height: auto;
+            }
+        </style>
         <script>
             baseUrl = '<%= rawParameters.baseUrl %>';
             function formatDate(date) {
@@ -62,7 +68,8 @@
                         } else {
                             alert(obj.message);
                             closeSignForm();
-                            $('#sign-button, #sign-button-big').hide();
+                            $('#sign-button').text('已报名').removeClass('button-red').addClass('button-white').off('click');
+                            $('#sign-button-big').text('已报名').removeClass('button-red-big').addClass('button-white-big').off('click');
                         }
                     },
                     error: function (obj) {

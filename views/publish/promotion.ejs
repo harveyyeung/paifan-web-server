@@ -62,7 +62,7 @@
                                         alert('上传图片失败，请检查网络连接，然后再试一次。' + obj.message);
                                         return;
                                     }
-                                    callback(obj.imageUri, {alt: '图片上传失败，请再试一次。'});
+                                    callback(obj.imageUri, {alt: ''});
                                 },
                                 error: function (obj) {
                                     $('#loading-div').dialog('close');
@@ -538,7 +538,7 @@
                                 <option value="集成店">集成店</option>
                                 <option value="买手店">买手店</option>
                                 <option value="体验店">体验店</option>
-                                <option value="电商品牌">电商品牌</option>
+                                <option value="电商平台">电商平台</option>
                                 <option value="时尚组织">时尚组织</option>
                             <% } else { %>
                                 <option value="时尚博主">时尚博主</option>
