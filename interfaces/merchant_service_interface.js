@@ -161,8 +161,8 @@ exports.postUpdatePromotion = function (promotionId, data) {
     });
 };
 
-exports.postPromotionSign = function (promotionId, data) {
-    var url = urls['postPromotionSign'].replace(':promotionId', promotionId);
+exports.postPromotionSign = function (promotionId, userId, data) {
+    var url = urls['postPromotionSign'].replace(':promotionId', promotionId).replace(':userId', userId);
 
     return request.postAsync({
         url: url,

@@ -9,9 +9,34 @@
                 max-width: 100%;
                 height: auto;
             }
+
+            div.popup {
+                height: 340px;
+            }
+
+            div#login-div {
+                height: 270px;
+            }
+
+
+            input#validation-code {
+                width: 130px;
+            }
+
+            div#validation-code-div {
+                width: 165px;
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            div.button-red, div.button-white {
+                margin-top: 10px;
+                padding: 6px 8px;
+            }
         </style>
         <script>
             baseUrl = '<%= rawParameters.baseUrl %>';
+            telephone = '<%= telephone %>';
             function formatDate(date) {
                 date = new Date(date);
                 return date.getFullYear() + ' 年 ' + (date.getMonth() + 1) + ' 月 ' + date.getDate() + ' 日 ' + date.getHours() + ':'
@@ -42,6 +67,7 @@
             }
 
             function submitSign() {
+                /*
                 var nameInput = $('input[name=name]');
                 var telephoneInput = $('input[name=telephone]');
 
@@ -54,6 +80,7 @@
                     alert('手机号输入有误，请检查后重新输入。');
                     return;
                 }
+                */
 
                 var url = '<%= rawParameters.baseUrl %>promotion/sign/<%= rawParameters.promotionId %>';
                 $.ajax({
@@ -82,9 +109,14 @@
             }
 
             function openSignForm() {
-                $('div.mask').height($(document).height());
-                $('div.mask').show();
-                $('#sign-form').show();
+                if (telephone) {
+                    $('#telephone-input').val('手机号：' + telephone);
+                    $('div.mask').height($(document).height());
+                    $('div.mask').show();
+                    $('#sign-form').show();
+                } else {
+                    openLoginForm();
+                }
             }
 
             function closeSignForm() {
@@ -92,9 +124,73 @@
                 $('#sign-form').hide();
             }
 
+            function openLoginForm() {
+                $('div.mask').height($(document).height());
+                $('div.mask').show();
+                $('#login-div').show();
+            }
+
+            function closeLoginForm() {
+                $('div.mask').hide();
+                $('#login-div').hide();
+            }
+
+            function requestValidationCode() {
+                var telephone = $('#login-tel').val();
+
+                if (!telephone || telephone.length != 11 || !(/^1[34578]\d{9}$/.test(telephone))) {
+                    alert('您输入的手机号无效，请重新输入。');
+                    return;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: 'http://paifan.me/web/sendSms.html',
+                    async: true,
+                    data: {"tel": telephone, "smsType": "login"},
+                    success: function (obj) {
+                        alert(obj.message);
+                    },
+                    error: function (obj) {
+                        alert(obj.message);
+                    }
+                });
+            }
+
+            function tryLogin() {
+                var telephone = $('#login-tel').val();
+                var code = $('#validation-code').val();
+
+                if (!telephone || telephone.length != 11 || !(/^1[34578]\d{9}$/.test(telephone))) {
+                    alert('您输入的手机号无效，请重新输入。');
+                    return;
+                }
+
+                if (!code || code.length < 1) {
+                    alert('请输入短信验证码。');
+                    return;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: 'http://paifan.me/front/login.html',
+                    async: true,
+                    data: {'tel': telephone, 'validateCode': code},
+                    success: function (obj) {
+                        document.cookie = 'wx=' + telephone + ';  path=/';
+                        alert(obj.message);
+                        window.location.reload();
+                    }, error: function (obj) {
+                        alert(obj.message);
+                    }
+                });
+            }
+
             $(document).ready(function () {
                 $('#deadline').text(formatDate('<%= promotion.deadline %>'));
-                $('#promotionTime').text(formatDate('<%= promotion.startTime %>') + " ~ " + formatDate('<%= promotion.endTime %>'))
+                $('#promotionTime').text(formatDate('<%= promotion.startTime %>') + " ~ " + formatDate('<%= promotion.endTime %>'));
                 loadDetail();
             });
         </script>
@@ -102,6 +198,31 @@
 
     <body class="mobile">
         <div class="mask"></div>
+        
+		<div id="login-div" class="popup" style="display: none;">
+			<div class="dialog-bar">
+				登录拍范
+				<!--div id="login-close-button" class="button close-button top-right-corner-button"></div-->
+			</div>
+			
+			<form id="login" action="">
+                <div class="dialog-input-placeholder">
+                    <input id="login-tel" type="tel" name="tel" class="no-border" placeholder="请输入您的手机号" maxlength="11">
+                </div>
+                <div>
+                    <div id="validation-code-div" class="dialog-input-placeholder">
+                        <input type="text" id="validation-code" name="validateCode" class="no-border" placeholder="短信验证码" maxlength="11">
+                    </div>
+                    <div class="button-red" onclick="requestValidationCode();" style="vertical-align: middle;">获取验证码</div>
+                </div>
+            </form>
+            <div class="buttons-line">
+                <br/>
+                <div class="button-red-big" onclick="tryLogin();">登录拍范</div>
+                <div class="button-white-big" onclick="closeLoginForm();">以后再说</div>
+            </div>
+		</div>
+
         <div class="popup" style="display:none;" id="sign-form">
             <div class="dialog-bar">
                 填写报名信息
@@ -111,11 +232,11 @@
                 来自：<%= promotion.name %> -->
             </div>
             <form id="sign" action="">
-                <div class="dialog-input-placeholder">
+                <!--div class="dialog-input-placeholder">
                     <input type="text" name="name" class="no-border" placeholder="请输入您的姓名" maxlength="20">
-                </div>
+                </div-->
                 <div class="dialog-input-placeholder">
-                    <input type="text" name="telephone" class="no-border" placeholder="请输入您的手机号" maxlength="11">
+                    <input type="text" id="telephone-input" class="no-border" placeholder="请输入您的手机号" maxlength="11" readonly="readonly" >
                 </div>
                 <div class="dialog-textarea-placeholder">
                     <textarea name="description" class="no-border" placeholder="自我介绍（可选）" maxlength="50"></textarea>

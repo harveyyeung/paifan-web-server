@@ -51,7 +51,7 @@
             <% }) %>
             <% if (!promotions || promotions.length == 0) { %>
                 <br/>
-                没有找到相关的推广<%= promotion.type === 'm' ? '服务' : '需求' %>。
+                没有找到相关的推广<%= rawParameters.type === 'm' ? '需求' : '服务' %>。
             <% } %>
         </div>
 

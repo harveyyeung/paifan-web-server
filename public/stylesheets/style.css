@@ -341,7 +341,7 @@ div.button-red, div.button-white {
 }
 
 div.button-red-big, div.button-white-big {
-  padding: 10px 40px;
+  padding: 10px 30px;
   margin: 5px;
 }
 
@@ -426,7 +426,7 @@ textarea.no-border {
 
 div.buttons-line {
   text-align: center;
-  margin-top: 25px;
+  margin-top: 5px;
 }
 
 div.mask {

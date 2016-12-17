@@ -46,3 +46,16 @@ exports.requestUserInformation = function (userId) {
         return obj;
     });
 };
+
+exports.requestUserInformationByTelephone = function (telephone) {
+    var url = urls['getUserInformationByTelephone'].replace(':telephone', telephone);
+
+    return request.getAsync({
+        url:  url,
+        baseUrl: baseUrl,
+        timeout: timeout
+    }).spread((res, body) => {
+        var obj = parseResponseMessage(body);       
+        return obj;
+    });
+}
